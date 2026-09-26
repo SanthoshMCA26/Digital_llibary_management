@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Library Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="icon" type="image/x-icon" href="../images/logo.jpg">
+</head>
+<body class="bg-light" onload="noBack();">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3 fixed-top">
+    <a class="navbar-brand fw-bold" href="#"><i class="fa-solid fa-book-open"></i> Digital Library</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link active" href="../DashBoard page/DashBoard.html">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="../book page/books.html">Books</a></li>
+        <li class="nav-item"><a class="nav-link" href="../member page/member.html">Members</a></li>
+        <li class="nav-item"><a class="nav-link" href="../report page/Report.html">Reports</a></li>
+        </ul>
+    </div>
+  </nav>
+
+  <!-- Sidebar + Main Content -->
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+       
+        <aside class=" col-md-2 bg-warning height-100 p-3">
+        <ul class="list-unstyled">
+          <li class="mb-3">
+            <a href="../DashBoard page/DashBoard.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm">
+              <i class="fa-solid fa-house me-2"></i> Dashboard
+            </a>
+          </li>
+          <li class="mb-3">
+            <a href="../book page/books.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm">
+              <i class="fa-solid fa-book me-2"></i> Books
+            </a>
+          </li>
+          <li class="mb-3">
+            <a href="../member page/member.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm">
+              <i class="fa-solid fa-users me-2"></i> Members
+            </a>
+          </li>
+          <li class="mb-3">
+            <a href="../issued book/issue.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm">
+              <i class="fa-solid fa-arrow-up me-2"></i> Issue Book
+            </a>
+         </li>
+         <li class="mb-3">
+            <a href="../return Book/returnBook.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm">
+              <i class="fa-solid fa-arrow-down me-2"></i> Return Book
+            </a>
+          </li>
+          <li class="mb-3">
+            <a href="../report page/Report.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm">
+              <i class="fa-solid fa-chart-bar me-2"></i> Reports
+            </a>
+          </li>
+          <li class="mb-3">
+            <a href="about.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm ">
+              <i class="fa-solid fa-circle-info me-2"></i> About
+            </a>
+          </li>
+          <li class="mt-4">
+            <a href="../../login/login.html" class="btn btn-danger text-white text-start w-100 rounded-3 shadow-lg">
+              <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+            </a>
+          </li>
+        </ul>
+      </aside>
+
+    
+      
+
+
+      <!-- Main Content -->
+      <main class="col-md-10 p-4">
+        <header class="mb-4">
+          <h2 class="fw-bold pt-5">Dashboard </h2>
+          <p>Welcome back, Admin! Here’s an overview of your library.</p>
+        </header>
+
+        <!-- Welcome Box -->
+        <div class="alert alert-primary d-flex justify-content-between align-items-center">
+          <div>
+            <h4 class="fw-bold">Welcome to Digital Library Management System</h4>
+            <p class="mb-0">Manage books, members, issue & return activities easily and efficiently.</p>
+          </div>
+          <img src="../images/books.jpg" alt="Books" class="img-fluid rounded" style="max-width:120px;">
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row g-3 my-3">
+          <div class="col-md-3">
+            <div class="card border-success text-center bg-primary text-white border border-dark border-3 rounded-3 shadow-lg">
+              <div class="card-body">
+                <h5 class="text-success fw-bold text-white">Local Storage</h5>
+                <p class="fs-4 mb-0">0</p>
+                <small>Eat message</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card border-primary text-center bg-success text-white border border-dark border-3 rounded-3 shadow-lg">
+              <div class="card-body">
+                <h5 class="text-primary fw-bold text-white">Total Books</h5>
+                <p class="fs-4 mb-0">0</p>
+                <small>Total Books</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card border-warning text-center bg-warning text-white border border-dark border-3 rounded-3 shadow-lg">
+              <div class="card-body">
+                <h5 class="text-warning fw-bold text-white">Add Books</h5>
+                <p class="fs-4 mb-0">0</p>
+                <small>Add books</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card border-danger text-center bg-danger text-white  border border-dark border-3 rounded-3 shadow-lg">
+              <div class="card-body">
+                <h5 class="text-danger fw-bold text-white">Validate Input</h5>
+                <p class="fs-4 mb-0">3</p>
+                <small>Validate input</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activities -->
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="fw-bold mb-3">Recent Activities</h5>
+                <ul class="list-unstyled">
+                  <li><i class="fa-solid fa-book-open-reader text-success me-2"></i>“The Alchemist” issued to John Doe — 20 May 2025</li>
+                  <li><i class="fa-solid fa-book text-warning me-2"></i>“Atomic Habits” returned by Jane Smith — 19 May 2025</li>
+                  <li><i class="fa-solid fa-user-plus text-primary me-2"></i>New member registered: Santhosh — 14 july 2025</li>
+                  <li><i class="fa-solid fa-book-reader text-purple me-2"></i>“Rich Dad Poor Dad” issued to Alice Johnson — 18 May 2025</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card text-center">
+              <div class="card-body">
+                <h5 class="fw-bold mb-3">Issued vs Returned Books</h5>
+                <div class="mb-5">
+                  <p>Issued Books: 3 (30%)</p>
+                  <p>Returned Books: 0 (0%)</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  
+
+  <script>
+    // Load books from localStorage
+let books = JSON.parse(localStorage.getItem("books")) || [];
+
+// Select the correct cards
+const localStorageElement = document.querySelector(".card.border-success .fs-4"); // Local Storage
+const totalBooksElement   = document.querySelector(".card.border-primary .fs-4"); // Total Books
+const addBooksElement     = document.querySelector(".card.border-warning .fs-4"); // Add Books
+
+// Initial update
+updateDashboard();
+
+// Function to update dashboard counts
+function updateDashboard() {
+  const books = JSON.parse(localStorage.getItem("books")) || [];
+  if (localStorageElement) localStorageElement.textContent = localStorage.length;
+  if (totalBooksElement)   totalBooksElement.textContent   = books.length;
+  if (addBooksElement)     addBooksElement.textContent     = books.length;
+}
+
+// Function to add a new book
+function addBook(name, author) {
+  let books = JSON.parse(localStorage.getItem("books")) || [];
+  const newBook = { name, author };
+  books.push(newBook);
+  localStorage.setItem("books", JSON.stringify(books));
+
+  // Refresh dashboard instantly
+  updateDashboard();
+
+}
+
+document.querySelector(".btn-danger").addEventListener("click", () => {
+  // Remove only login/session data
+  localStorage.removeItem("userEmail");
+  localStorage.removeItem("userPassword");
+  localStorage.removeItem("userRole");
+  window.location.href = "../../login/login.html";
+});
+if (!localStorage.getItem("userRole")) {
+  window.location.href = "../../login/login.html";
+}
+
+// Prevent forward/back navigation after logout
+window.history.forward();
+function noBack() {
+window.history.forward();
+}
+
+
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> <!-- for navbar expand -->
+
+
+</body>
+</html>

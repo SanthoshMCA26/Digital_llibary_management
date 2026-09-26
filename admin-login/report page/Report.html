@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="icon" type="image/x-icon" href="../images/logo.jpg">
 </head>
-<body class="bg-light">
+<body class="bg-light"  onload="noBack();">
 
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3 fixed-top">
@@ -36,11 +36,11 @@
             
           <li class="mb-3"><a href="../book page/books.html" class="btn btn-warning text-dark w-100 text-start rounded-3 shadow-sm"><i class="fa-solid fa-book me-2"></i> Books</a></li>
           <li class="mb-3"><a href="../member page/member.html" class="btn btn-warning text-dark w-100 text-start rounded-3 shadow-sm"><i class="fa-solid fa-users me-2"></i> Members</a></li>
-          <li class="mb-3"><a href="issue-book.html" class="btn btn-warning text-dark w-100 text-start rounded-3 shadow-sm"><i class="fa-solid fa-arrow-up me-2"></i> Issue Book</a></li>
-          <li class="mb-3"><a href="return-book.html" class="btn btn-warning text-dark w-100 text-start rounded-3 shadow-sm"><i class="fa-solid fa-arrow-down me-2"></i> Return Book</a></li>
+          <li class="mb-3"><a href="../issued book/issue.html" class="btn btn-warning text-dark w-100 text-start rounded-3 shadow-sm"><i class="fa-solid fa-arrow-up me-2"></i> Issue Book</a></li>
+          <li class="mb-3"><a href="../return Book/returnBook.html" class="btn btn-warning text-dark w-100 text-start rounded-3 shadow-sm"><i class="fa-solid fa-arrow-down me-2"></i> Return Book</a></li>
           <li class="mb-3"><a href="../report page/Report.html" class="btn btn-warning text-dark w-100 text-start rounded-3 shadow-sm"><i class="fa-solid fa-chart-bar me-2"></i> Reports</a></li>
           <li class="mb-3"><a href="about.html" class="btn btn-warning text-dark w-100 text-start rounded-3 shadow-sm"><i class="fa-solid fa-circle-info me-2"></i> About</a></li>
-          <li class="mt-4"><a href="../login/login.html" class="btn btn-danger text-white w-100 text-start rounded-3 shadow-lg"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a></li>
+          <li class="mt-4"><a href="../../login/login.html" class="btn btn-danger text-white w-100 text-start rounded-3 shadow-lg"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a></li>
         </ul>
       </aside>
 
@@ -185,6 +185,23 @@ function addReport(memberId, bookId) {
   // Refresh instantly
   updateReports();
 }
+document.querySelector(".btn-danger").addEventListener("click", () => {
+  // Remove only login/session data
+  localStorage.removeItem("userEmail");
+  localStorage.removeItem("userPassword");
+  localStorage.removeItem("userRole");
+  window.location.href = "../../login/login.html";
+});
+if (!localStorage.getItem("userRole")) {
+  window.location.href = "../../login/login.html";
+}
+
+// Prevent forward/back navigation after logout
+window.history.forward();
+function noBack() {
+  window.history.forward();
+}
+
 
 
 </script>
