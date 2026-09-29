@@ -20,22 +20,15 @@
         <li class="nav-item"><a class="nav-link" href="../book page/books.html">Books</a></li>
         <li class="nav-item"><a class="nav-link" href="../member page/member.html">Members</a></li>
         <li class="nav-item"><a class="nav-link" href="../report page/Report.html">Reports</a></li>
-        </ul>
+      </ul>
     </div>
   </nav>
 
-  <!-- Sidebar + Main Content -->
   <div class="container-fluid">
     <div class="row">
       <!-- Sidebar -->
-       
-        <aside class=" col-md-2 bg-warning height-100 p-3">
+      <aside class="col-md-2 bg-warning height-100 p-3">
         <ul class="list-unstyled">
-          <li class="mb-3">
-            <a href="../DashBoard page/DashBoard.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm">
-              <i class="fa-solid fa-house me-2"></i> Dashboard
-            </a>
-          </li>
           <li class="mb-3">
             <a href="../book page/books.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm">
               <i class="fa-solid fa-book me-2"></i> Books
@@ -50,8 +43,8 @@
             <a href="../issued book/issue.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm">
               <i class="fa-solid fa-arrow-up me-2"></i> Issue Book
             </a>
-         </li>
-         <li class="mb-3">
+          </li>
+          <li class="mb-3">
             <a href="../return Book/returnBook.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm">
               <i class="fa-solid fa-arrow-down me-2"></i> Return Book
             </a>
@@ -62,26 +55,22 @@
             </a>
           </li>
           <li class="mb-3">
-            <a href="about.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm ">
+            <a href="../about/about.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm">
               <i class="fa-solid fa-circle-info me-2"></i> About
             </a>
           </li>
           <li class="mt-4">
-            <a href="../../login/login.html" class="btn btn-danger text-white text-start w-100 rounded-3 shadow-lg">
+            <a href="../../login/login.html" id="logoutBtn" class="btn btn-danger text-white text-start w-100 rounded-3 shadow-lg">
               <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
             </a>
           </li>
         </ul>
       </aside>
 
-    
-      
-
-
       <!-- Main Content -->
       <main class="col-md-10 p-4">
         <header class="mb-4">
-          <h2 class="fw-bold pt-5">Dashboard </h2>
+          <h2 class="fw-bold pt-5">Dashboard</h2>
           <p>Welcome back, Admin! Here’s an overview of your library.</p>
         </header>
 
@@ -89,7 +78,7 @@
         <div class="alert alert-primary d-flex justify-content-between align-items-center">
           <div>
             <h4 class="fw-bold">Welcome to Digital Library Management System</h4>
-            <p class="mb-0">Manage books, members, issue & return activities easily and efficiently.</p>
+            <p class="mb-0">Manage books, members, issue &amp; return activities easily and efficiently.</p>
           </div>
           <img src="../images/books.jpg" alt="Books" class="img-fluid rounded" style="max-width:120px;">
         </div>
@@ -97,128 +86,210 @@
         <!-- Stats Cards -->
         <div class="row g-3 my-3">
           <div class="col-md-3">
-            <div class="card border-success text-center bg-primary text-white border border-dark border-3 rounded-3 shadow-lg">
+            <div class="card text-center bg-primary text-white border border-dark border-3 rounded-3 shadow-lg">
               <div class="card-body">
-                <h5 class="text-success fw-bold text-white">Local Storage</h5>
-                <p class="fs-4 mb-0">0</p>
-                <small>Eat message</small>
+                <h5 class="fw-bold text-white">Total Books</h5>
+                <p class="fs-4 mb-0" id="statTotalBooks">0</p>
+                <small>Titles in library</small>
               </div>
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card border-primary text-center bg-success text-white border border-dark border-3 rounded-3 shadow-lg">
+            <div class="card text-center bg-success text-white border border-dark border-3 rounded-3 shadow-lg">
               <div class="card-body">
-                <h5 class="text-primary fw-bold text-white">Total Books</h5>
-                <p class="fs-4 mb-0">0</p>
-                <small>Total Books</small>
+                <h5 class="fw-bold text-white">Available Books</h5>
+                <p class="fs-4 mb-0" id="statAvailable">0</p>
+                <small>Copies on the shelf</small>
               </div>
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card border-warning text-center bg-warning text-white border border-dark border-3 rounded-3 shadow-lg">
+            <div class="card text-center bg-warning text-white border border-dark border-3 rounded-3 shadow-lg">
               <div class="card-body">
-                <h5 class="text-warning fw-bold text-white">Add Books</h5>
-                <p class="fs-4 mb-0">0</p>
-                <small>Add books</small>
+                <h5 class="fw-bold text-white">Issued Books</h5>
+                <p class="fs-4 mb-0" id="statIssued">0</p>
+                <small>Currently issued</small>
               </div>
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card border-danger text-center bg-danger text-white  border border-dark border-3 rounded-3 shadow-lg">
+            <div class="card text-center bg-danger text-white border border-dark border-3 rounded-3 shadow-lg">
               <div class="card-body">
-                <h5 class="text-danger fw-bold text-white">Validate Input</h5>
-                <p class="fs-4 mb-0">3</p>
-                <small>Validate input</small>
+                <h5 class="fw-bold text-white">Total Members</h5>
+                <p class="fs-4 mb-0" id="statMembers">0</p>
+                <small>Registered members</small>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Activities -->
+        <!-- Activities + Chart -->
         <div class="row g-3">
           <div class="col-md-6">
-            <div class="card">
+            <div class="card h-100">
               <div class="card-body">
                 <h5 class="fw-bold mb-3">Recent Activities</h5>
-                <ul class="list-unstyled">
-                  <li><i class="fa-solid fa-book-open-reader text-success me-2"></i>“The Alchemist” issued to John Doe — 20 May 2025</li>
-                  <li><i class="fa-solid fa-book text-warning me-2"></i>“Atomic Habits” returned by Jane Smith — 19 May 2025</li>
-                  <li><i class="fa-solid fa-user-plus text-primary me-2"></i>New member registered: Santhosh — 14 july 2025</li>
-                  <li><i class="fa-solid fa-book-reader text-purple me-2"></i>“Rich Dad Poor Dad” issued to Alice Johnson — 18 May 2025</li>
-                </ul>
+                <ul class="list-unstyled mb-0" id="activityList"></ul>
               </div>
             </div>
           </div>
           <div class="col-md-6">
-            <div class="card text-center">
+            <div class="card text-center h-100">
               <div class="card-body">
                 <h5 class="fw-bold mb-3">Issued vs Returned Books</h5>
-                <div class="mb-5">
-                  <p>Issued Books: 3 (30%)</p>
-                  <p>Returned Books: 0 (0%)</p>
+                <div style="position:relative; height:240px;">
+                  <canvas id="issueReturnChart"></canvas>
                 </div>
+                <p class="text-muted small mb-0 mt-2" id="chartEmpty" style="display:none;">
+                  No issue or return records yet.
+                </p>
               </div>
             </div>
           </div>
         </div>
+
       </main>
     </div>
   </div>
-  
 
-  <script>
-    // Load books from localStorage
-let books = JSON.parse(localStorage.getItem("books")) || [];
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  // Stop people from going back after logout
+  function noBack() {
+    window.history.forward();
+  }
 
-// Select the correct cards
-const localStorageElement = document.querySelector(".card.border-success .fs-4"); // Local Storage
-const totalBooksElement   = document.querySelector(".card.border-primary .fs-4"); // Total Books
-const addBooksElement     = document.querySelector(".card.border-warning .fs-4"); // Add Books
+  // If user is not logged in, send them to login page
+  if (!localStorage.getItem("userRole")) {
+    window.location.href = "../../login/login.html";
+  }
 
-// Initial update
-updateDashboard();
+  // Get list from localStorage (always return an array)
+  function getList(key) {
+    let data = localStorage.getItem(key);
+    if (!data) return [];
+    try {
+      return JSON.parse(data);
+    } catch {
+      return [];
+    }
+  }
 
-// Function to update dashboard counts
-function updateDashboard() {
-  const books = JSON.parse(localStorage.getItem("books")) || [];
-  if (localStorageElement) localStorageElement.textContent = localStorage.length;
-  if (totalBooksElement)   totalBooksElement.textContent   = books.length;
-  if (addBooksElement)     addBooksElement.textContent     = books.length;
-}
+  // Make text safe for HTML
+  function safeText(text) {
+    let div = document.createElement("div");
+    div.textContent = text || "";
+    return div.innerHTML;
+  }
 
-// Function to add a new book
-function addBook(name, author) {
-  let books = JSON.parse(localStorage.getItem("books")) || [];
-  const newBook = { name, author };
-  books.push(newBook);
-  localStorage.setItem("books", JSON.stringify(books));
+  // Show "time ago" in simple words
+  function timeAgo(dateString) {
+    let seconds = Math.floor((Date.now() - new Date(dateString).getTime()) / 1000);
+    if (isNaN(seconds)) return "";
+    if (seconds < 60) return "just now";
+    if (seconds < 3600) return Math.floor(seconds / 60) + " min ago";
+    if (seconds < 86400) return Math.floor(seconds / 3600) + " hr ago";
+    return Math.floor(seconds / 86400) + " day(s) ago";
+  }
 
-  // Refresh dashboard instantly
+  // Icons and colors for each activity type
+  const ACTIVITY_STYLE = {
+    "book-add":    { icon: "fa-book",             color: "text-warning" },
+    "book-update": { icon: "fa-pen-to-square",    color: "text-info" },
+    "book-delete": { icon: "fa-trash",            color: "text-danger" },
+    "issue":       { icon: "fa-book-open-reader", color: "text-success" },
+    "return":      { icon: "fa-rotate-left",      color: "text-secondary" },
+    "member-add":  { icon: "fa-user-plus",        color: "text-primary" }
+  };
+
+  let chart = null; // chart object
+
+  function updateDashboard() {
+    // Get data
+    let books      = getList("books");
+    let members    = getList("members");
+    let activities = getList("activities");
+    let issuedBooks = getList("issuedBooks");
+    let returnedBooks = getList("returnbooks");
+    let returnedIds = new Set(returnedBooks.map(book => String(book.id)));
+
+    // Count totals
+    let totalCopies = books.reduce((sum, b) => sum + (parseInt(b.quantity) || 0), 0);
+    let issuedCount = issuedBooks.length;
+    let returnedCount = returnedBooks.length;
+    let currentIssued = issuedBooks.filter(book => !returnedIds.has(String(book.id))).length;
+
+    // Show stats
+    document.getElementById("statTotalBooks").textContent = books.length;
+    document.getElementById("statAvailable").textContent  = Math.max(totalCopies - currentIssued, 0);
+    document.getElementById("statIssued").textContent     = currentIssued;
+    document.getElementById("statMembers").textContent    = members.length;
+
+    // Show recent activities (last 6)
+    let list = document.getElementById("activityList");
+    let recent = activities.slice(-6).reverse();
+    if (recent.length === 0) {
+      list.innerHTML = '<li class="text-muted">No activity yet. Add a book to get started.</li>';
+    } else {
+      list.innerHTML = recent.map(a => {
+        let style = ACTIVITY_STYLE[a.type] || { icon: "fa-circle-info", color: "text-secondary" };
+        return `
+          <li class="d-flex align-items-start mb-2">
+            <i class="fa-solid ${style.icon} ${style.color} me-2 mt-1"></i>
+            <div class="flex-grow-1 text-start">${safeText(a.text)}</div>
+            <small class="text-muted ms-2 text-nowrap">${safeText(timeAgo(a.time))}</small>
+          </li>`;
+      }).join("");
+    }
+
+    // Show chart
+    let emptyMsg = document.getElementById("chartEmpty");
+    emptyMsg.style.display = (issuedCount + returnedCount === 0) ? "block" : "none";
+
+    if (typeof Chart === "undefined") return; // Chart.js not loaded
+
+    let chartData = [issuedCount, returnedCount];
+    if (chart) {
+      chart.data.datasets[0].data = chartData;
+      chart.update();
+    } else {
+      chart = new Chart(document.getElementById("issueReturnChart"), {
+        type: "bar",
+        data: {
+          labels: ["Issued", "Returned"],
+          datasets: [{
+            data: chartData,
+            backgroundColor: ["#ffc107", "#198754"],
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+      });
+    }
+  }
+
+  // Run once at start
   updateDashboard();
 
-}
+  // Refresh when page comes back from cache
+  window.addEventListener("pageshow", updateDashboard);
+  // Refresh if another tab changes localStorage
+  window.addEventListener("storage", updateDashboard);
 
-document.querySelector(".btn-danger").addEventListener("click", () => {
-  // Remove only login/session data
-  localStorage.removeItem("userEmail");
-  localStorage.removeItem("userPassword");
-  localStorage.removeItem("userRole");
-  window.location.href = "../../login/login.html";
-});
-if (!localStorage.getItem("userRole")) {
-  window.location.href = "../../login/login.html";
-}
-
-// Prevent forward/back navigation after logout
-window.history.forward();
-function noBack() {
-window.history.forward();
-}
+  // Logout button clears login info
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userPassword");
+    localStorage.removeItem("userRole");
+  });
+</script>
 
 
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> <!-- for navbar expand -->
-
-
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

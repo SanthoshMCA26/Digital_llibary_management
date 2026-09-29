@@ -39,95 +39,106 @@
           <li class="mb-3"><a href="../issued book/issue.html" class="btn btn-warning text-dark w-100 text-start rounded-3 shadow-sm"><i class="fa-solid fa-arrow-up me-2"></i> Issue Book</a></li>
           <li class="mb-3"><a href="../return Book/returnBook.html" class="btn btn-warning text-dark w-100 text-start rounded-3 shadow-sm"><i class="fa-solid fa-arrow-down me-2"></i> Return Book</a></li>
           <li class="mb-3"><a href="../report page/Report.html" class="btn btn-warning text-dark w-100 text-start rounded-3 shadow-sm"><i class="fa-solid fa-chart-bar me-2"></i> Reports</a></li>
-          <li class="mb-3"><a href="about.html" class="btn btn-warning text-dark w-100 text-start rounded-3 shadow-sm"><i class="fa-solid fa-circle-info me-2"></i> About</a></li>
+          <li class="mb-3"><a href="../about/about.html" class="btn btn-warning text-dark w-100 text-start rounded-3 shadow-sm"><i class="fa-solid fa-circle-info me-2"></i> About</a></li>
           <li class="mt-4"><a href="../../login/login.html" class="btn btn-danger text-white w-100 text-start rounded-3 shadow-lg"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a></li>
         </ul>
       </aside>
 
-      <!-- Main Content -->
-      <main class="col-md-10 p-4">
-        <header>
-          <h2 class=" pt-3">Reports Dashboard</h2>
-          <p class="text-muted">Get insights and manage library statistics</p>
-        </header>
+<main class="col-md-10 p-4">
+  <header>
+    <h2 class="pt-3">Reports Dashboard</h2>
+    <p class="text-muted">Get insights and manage library statistics</p>
+  </header>
 
-        <!-- Report Cards -->
-        <div class="row g-4 mb-5">
-          <div class="col-md-4">
-            <div class="card text-center shadow-sm">
-              <div class="card-header bg-primary text-white">
-                <i class="bi bi-book" style="font-size: 2rem;"></i>
-              </div>
-              <div class="card-body">
-                <h3 id="totalBooks">0</h3>
-                <p class="text-muted">Total Books</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-4">
-            <div class="card text-center shadow-sm">
-              <div class="card-header bg-success text-white">
-                <i class="bi bi-people-fill" style="font-size: 2rem;"></i>
-              </div>
-              <div class="card-body">
-                <h3 id="totalMembers">0</h3>
-                <p class="text-muted">Total Members</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-4">
-            <div class="card text-center shadow-sm">
-              <div class="card-header bg-warning text-white">
-                <i class="bi bi-clipboard-check-fill" style="font-size: 2rem;"></i>
-              </div>
-              <div class="card-body">
-                <h3 id="booksIssued">0</h3>
-                <p class="text-muted">Books Issued</p>
-              </div>
-            </div>
-          </div>
+  <!-- ✅ Report Cards -->
+  <div class="row g-3 mb-5">
+    <div class="col-md-3">
+      <div class="card text-center shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <i class="bi bi-book" style="font-size: 2rem;"></i>
         </div>
+        <div class="card-body">
+          <h3 id="totalBooks">0</h3>
+          <p class="text-muted">Total Books</p>
+        </div>
+      </div>
+    </div>
 
-        <!-- Recently Issued Books Table -->
-        <section>
-          <h3 class="fw-bold mb-3">Recently Issued Books</h3>
-          <table class="table table-bordered table-hover shadow-sm">
-            <thead class="table-light">
-              <tr>
-                <th>Member</th>
-                <th>Book</th>
-                <th>Issued Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
-      </main>
+    <div class="col-md-3">
+      <div class="card text-center shadow-sm">
+        <div class="card-header bg-success text-white">
+          <i class="bi bi-people-fill" style="font-size: 2rem;"></i>
+        </div>
+        <div class="card-body">
+          <h3 id="totalMembers">0</h3>
+          <p class="text-muted">Total Members</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card text-center shadow-sm">
+        <div class="card-header bg-warning text-white">
+          <i class="bi bi-clipboard-check-fill" style="font-size: 2rem;"></i>
+        </div>
+        <div class="card-body">
+          <h3 id="booksIssued">0</h3>
+          <p class="text-muted">Books Issued</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ 4th card stays in same row -->
+    <div class="col-md-3">
+      <div class="card text-center shadow-sm">
+        <div class="card-header bg-info text-white">
+          <i class="bi bi-arrow-return-left" style="font-size: 2rem;"></i>
+        </div>
+        <div class="card-body">
+          <h3 id="booksReturn">0</h3>
+          <p class="text-muted">Books Return</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Recently Issued Books Table -->
+  <section >
+    <h3 class="fw-bold mb-3">Issued and Returned Books</h3>
+    <table class="table table-bordered table-hover shadow-sm">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Book Name</th>
+          <th>Member</th>
+          <th>Issued Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="reportsTable">
+        <!-- Dynamic rows will be inserted here -->
+      </tbody>
+    </table>
+  </section>
+</main>
+
     </div>
   </div>
 
 
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-  
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
 document.addEventListener("DOMContentLoaded", () => {
   updateReports();
 });
 
-// Function to update report cards and table
 function updateReports() {
   const books   = JSON.parse(localStorage.getItem("books")) || [];
   const members = JSON.parse(localStorage.getItem("members")) || [];
-  const reports = JSON.parse(localStorage.getItem("reports")) || [];
+  const issued  = JSON.parse(localStorage.getItem("issuedBooks")) || [];
+  const returned = JSON.parse(localStorage.getItem("returnbooks")) || [];
+  const returnedIds = new Set(returned.map(book => String(book.id)));
 
   // ✅ Update cards
   const totalBooksCard   = document.getElementById("totalBooks");
@@ -136,74 +147,39 @@ function updateReports() {
 
   if (totalBooksCard)   totalBooksCard.textContent   = books.length;
   if (totalMembersCard) totalMembersCard.textContent = members.length;
-  if (booksIssuedCard)  booksIssuedCard.textContent  = reports.length;
+  if (booksIssuedCard)  booksIssuedCard.textContent  = issued.filter(book => !returnedIds.has(String(book.id))).length;
+  const booksReturnCard = document.getElementById("booksReturn");
+  if (booksReturnCard) booksReturnCard.textContent = returned.length;
 
-  // ✅ Update table (Member, Book, Issued Date)
-  const tableBody = document.querySelector("tbody");
+  // Show issued records and mark them returned when their ID exists in returnbooks.
+  const reportRows = issued.map(book => ({
+    ...book,
+    status: returnedIds.has(String(book.id)) ? "Returned" : (book.status || "Issued")
+  }));
+  returned.forEach(book => {
+    if (!issued.some(issuedBook => String(issuedBook.id) === String(book.id))) {
+      reportRows.push({ ...book, status: "Returned" });
+    }
+  });
+
+  const tableBody = document.getElementById("reportsTable");
   if (tableBody) {
     tableBody.innerHTML = "";
-    reports.forEach((report) => {
+    reportRows.forEach((book) => {
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${report.member}</td>
-        <td>${report.title}</td>
-        <td>${report.date}</td>
+        <td>${book.id}</td>
+        <td>${book.name}</td>
+        <td>${book.member}</td>
+        <td>${book.date}</td>
+        <td>${book.status}</td>
       `;
       tableBody.appendChild(row);
     });
   }
 }
-
-// Function to add a new report entry when a book is issued
-function addReport(memberId, bookId) {
-  const members = JSON.parse(localStorage.getItem("members")) || [];
-  const books   = JSON.parse(localStorage.getItem("books")) || [];
-  let reports   = JSON.parse(localStorage.getItem("reports")) || [];
-
-  // Find member and book details by ID
-  const member = members.find(m => m.id === memberId);
-  const book   = books.find(b => b.id === bookId);
-
-  if (!member || !book) {
-    alert("Invalid member or book selection!");
-    return;
-  }
-
-  const newReport = {
-    member: member.name,
-    title: book.name,
-    date: new Date().toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric"
-    })
-  };
-
-  reports.push(newReport);
-  localStorage.setItem("reports", JSON.stringify(reports));
-
-  // Refresh instantly
-  updateReports();
-}
-document.querySelector(".btn-danger").addEventListener("click", () => {
-  // Remove only login/session data
-  localStorage.removeItem("userEmail");
-  localStorage.removeItem("userPassword");
-  localStorage.removeItem("userRole");
-  window.location.href = "../../login/login.html";
-});
-if (!localStorage.getItem("userRole")) {
-  window.location.href = "../../login/login.html";
-}
-
-// Prevent forward/back navigation after logout
-window.history.forward();
-function noBack() {
-  window.history.forward();
-}
-
-
-
 </script>
+
+
 </body>
 </html>

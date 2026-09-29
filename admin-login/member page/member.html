@@ -27,11 +27,6 @@
         <aside class=" col-md-2 bg-warning height-100 p-3">
         <ul class="list-unstyled">
           <li class="mb-3">
-            <a href="../DashBoard page/DashBoard.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm">
-              <i class="fa-solid fa-house me-2"></i> Dashboard
-            </a>
-          </li>
-          <li class="mb-3">
             <a href="../book page/books.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm">
               <i class="fa-solid fa-book me-2"></i> Books
             </a>
@@ -57,7 +52,7 @@
             </a>
           </li>
           <li class="mb-3">
-            <a href="about.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm">
+            <a href="../about/about.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm">
               <i class="fa-solid fa-circle-info me-2"></i> About
             </a>
           </li>
@@ -172,6 +167,19 @@
         members[index] = { id: memberId, name: memberName, email: memberEmail, phone: memberPhone };
       } else {
         members.push({ id: memberId, name: memberName, email: memberEmail, phone: memberPhone });
+
+        let activities = [];
+        try {
+          activities = JSON.parse(localStorage.getItem("activities")) || [];
+        } catch {
+          activities = [];
+        }
+        activities.push({
+          type: "member-add",
+          text: `Added member ${memberName} (ID: ${memberId})`,
+          time: new Date().toISOString()
+        });
+        localStorage.setItem("activities", JSON.stringify(activities));
       }
 
       localStorage.setItem("members", JSON.stringify(members));
@@ -190,12 +198,27 @@
 
     window.deleteMember = function(id) {
       let members = JSON.parse(localStorage.getItem("members")) || [];
-      if (confirm("Are you sure you want to delete this member?")) {
-        members = members.filter(m => m.id !== id);
-        localStorage.setItem("members", JSON.stringify(members));
-        alert("Member deleted successfully!");
-        loadMembers();
+      const deletedMember = members.find(member => String(member.id) === String(id));
+      if (!deletedMember || !confirm("Are you sure you want to delete this member?")) return;
+
+      members = members.filter(member => String(member.id) !== String(id));
+      localStorage.setItem("members", JSON.stringify(members));
+
+      let activities = [];
+      try {
+        activities = JSON.parse(localStorage.getItem("activities")) || [];
+      } catch {
+        activities = [];
       }
+      activities.push({
+        type: "member-delete",
+        text: `Deleted member ${deletedMember.name} (ID: ${deletedMember.id})`,
+        time: new Date().toISOString()
+      });
+      localStorage.setItem("activities", JSON.stringify(activities));
+
+      alert("Member deleted successfully!");
+      loadMembers();
     };
 
     window.editMember = function(id) {
