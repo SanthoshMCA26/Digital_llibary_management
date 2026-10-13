@@ -117,6 +117,10 @@
   <!-- ✅ Recently Issued Books Table -->
   <section >
     <h3 class="fw-bold mb-3">Issued and Returned Books</h3>
+    <div class="mb-3">
+      <label for="reportSearch" class="form-label">Search reports</label>
+      <input type="search" id="reportSearch" class="form-control" placeholder="Search by ID, book name, member, or status" aria-label="Search reports by ID, book name, member, or status">
+    </div>
     <div class="report-table-scroll">
       <table class="table table-bordered table-hover shadow-sm mb-0">
         <thead class="table-light">
@@ -144,6 +148,7 @@
  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("reportSearch").addEventListener("input", updateReports);
   updateReports();
 });
 
@@ -179,15 +184,27 @@ function updateReports() {
   const tableBody = document.getElementById("reportsTable");
   if (tableBody) {
     tableBody.innerHTML = "";
-    reportRows.forEach((book) => {
+    const searchTerm = document.getElementById("reportSearch").value.trim().toLowerCase();
+    const visibleRows = reportRows.filter(book =>
+      [book.id, book.name, book.memberId, book.member, book.date, book.status]
+        .some(value => String(value == null ? "" : value).toLowerCase().includes(searchTerm))
+    );
+    if (visibleRows.length === 0) {
       const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${book.id}</td>
-        <td>${book.name}</td>
-        <td>${book.member}</td>
-        <td>${book.date}</td>
-        <td>${book.status}</td>
-      `;
+      const cell = document.createElement("td");
+      cell.colSpan = 5;
+      cell.className = "text-muted";
+      cell.textContent = reportRows.length === 0 ? "No issue or return records yet." : "No reports match your search.";
+      row.appendChild(cell);
+      tableBody.appendChild(row);
+    }
+    visibleRows.forEach((book) => {
+      const row = document.createElement("tr");
+      [book.id, book.name, book.member, book.date, book.status].forEach(value => {
+        const cell = document.createElement("td");
+        cell.textContent = value == null ? "" : String(value);
+        row.appendChild(cell);
+      });
       tableBody.appendChild(row);
     });
   }

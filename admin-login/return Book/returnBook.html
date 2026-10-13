@@ -8,6 +8,18 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="icon" type="image/x-icon" href="../images/logo.jpg">
+  <style>
+    .return-table-scroll {
+      max-height: 190px;
+      overflow-y: auto;
+    }
+
+    .return-table-scroll thead th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+  </style>
 </head>
 <body class="bg-light" onload="noBack();">
 
@@ -86,21 +98,23 @@
           <span id="selectedReturnCount" class="text-muted" aria-live="polite">0 selected</span>
           <button type="button" id="deleteSelectedReturnsBtn" class="btn btn-danger" disabled>Delete Selected</button>
         </div>
-        <table class="table table-bordered text-center">
-          <thead class="table-light">
-            <tr>
-              <th><input type="checkbox" id="selectAllReturns" class="form-check-input" aria-label="Select all returned records"></th>
-              <th>ID</th>
-              <th>Book Name</th>
-              <th>Member</th>
-              <th>Quantity</th>
-              <th>Return Date</th>
-              <th>Status</th>
-              <th>action</th>
-            </tr>
-          </thead>
-          <tbody id="ReturnTable"></tbody>
-        </table>
+        <div class="return-table-scroll">
+          <table class="table table-bordered text-center mb-0">
+            <thead class="table-light">
+              <tr>
+                <th><input type="checkbox" id="selectAllReturns" class="form-check-input" aria-label="Select all returned records"></th>
+                <th>ID</th>
+                <th>Book Name</th>
+                <th>Member</th>
+                <th>Quantity</th>
+                <th>Return Date</th>
+                <th>Status</th>
+                <th>action</th>
+              </tr>
+            </thead>
+            <tbody id="ReturnTable"></tbody>
+          </table>
+        </div>
       </main>
     </div>
   </div>
@@ -135,6 +149,20 @@ document.addEventListener("DOMContentLoaded", () => {
     return `${today.getFullYear()}-${month}-${day}`;
   }
 
+  function getIssueId(issue) {
+    if (issue.issueId) return String(issue.issueId);
+    return `${String(issue.id || "")}|${String(issue.memberId || "")}|${String(issue.date || "")}|${String(issue.name || "")}`;
+  }
+
+  function hasReturnRecordForIssue(returnedRecords, issue) {
+    return returnedRecords.some(returned => {
+      if (returned.issueId) return String(returned.issueId) === getIssueId(issue);
+      return !issue.issueId &&
+        String(returned.id) === String(issue.id) &&
+        String(returned.memberId || "") === String(issue.memberId || "");
+    });
+  }
+
   function lookupIssuedBook() {
     const id = bookIdInput.value.trim();
     const memberId = memberIdInput.value.trim();
@@ -153,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const activeIssues = issuedBooks.filter(book =>
       String(book.id) === id &&
       book.status !== "Returned" &&
-      !returnedRecords.some(returned => String(returned.id) === String(book.id) && String(returned.memberId || "") === String(book.memberId || ""))
+      !hasReturnRecordForIssue(returnedRecords, book)
     );
     if (activeIssues.length === 0) {
       bookLookupMessage.textContent = memberId ? "No active issue found for this Book ID and Member ID." : "No active issue found for this Book ID.";
@@ -285,10 +313,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     let returnbooks = JSON.parse(localStorage.getItem("returnbooks")) || [];
-    const index = returnbooks.findIndex(book =>
-      String(book.id) === String(id) && String(book.memberId || "") === String(issuedBook.memberId || memberId)
-    );
-    if (index !== -1) {
+    if (hasReturnRecordForIssue(returnbooks, issuedBook)) {
       alert("This Book ID for this member has already been returned.");
       return;
     }
@@ -298,6 +323,7 @@ document.addEventListener("DOMContentLoaded", () => {
       name: issuedBook.name,
       member: issuedBook.member,
       memberId: issuedBook.memberId || memberId,
+      issueId: getIssueId(issuedBook),
       quantity: Number(issuedBook.quantity) > 0 ? Number(issuedBook.quantity) : 1,
       date: issuedBook.date,
       returnDate: getCurrentDate(),
