@@ -51,9 +51,15 @@
           </div>
         </header>
 
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+          <span id="selectedIssueCount" class="text-muted" aria-live="polite">0 selected</span>
+          <button type="button" id="deleteSelectedIssuesBtn" class="btn btn-danger" disabled>Delete Selected</button>
+        </div>
+
         <table class="table table-bordered text-center">
           <thead class="table-light">
             <tr>
+              <th><input type="checkbox" id="selectAllIssues" class="form-check-input" aria-label="Select all issued records"></th>
               <th>ID</th>
               <th>Book Name</th>
               <th>Member ID</th>
@@ -144,6 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const memberIssuedSummary = document.getElementById("memberIssuedSummary");
   const saveBtn = document.getElementById("saveBtn");
   const issuedBookModal = new bootstrap.Modal(document.getElementById("issuedBookModal"));
+  const selectedIssueIds = new Set();
   let editingId = null;
 
   document.getElementById("logoutBtn").addEventListener("click", () => {
@@ -320,14 +327,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const books = getIssuedBooks();
     tbody.innerHTML = "";
     if (books.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="9" class="text-muted">No books have been issued yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="10" class="text-muted">No books have been issued yet.</td></tr>';
+      updateIssueSelectionControls(0);
       return;
     }
+
+    const existingIssueIds = new Set(books.map(book => getIssueId(book)));
+    selectedIssueIds.forEach(id => {
+      if (!existingIssueIds.has(id)) selectedIssueIds.delete(id);
+    });
 
     books.forEach(book => {
       const issueId = getIssueId(book);
       const row = `
         <tr>
+          <td><input type="checkbox" class="form-check-input issue-selection" value="${escapeHtml(issueId)}" aria-label="Select issue for ${escapeHtml(book.name)}"${selectedIssueIds.has(issueId) ? " checked" : ""}></td>
           <td>${escapeHtml(book.id)}</td>
           <td>${escapeHtml(book.name)}</td>
           <td>${escapeHtml(book.memberId || "")}</td>
@@ -346,9 +360,30 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
       tbody.insertAdjacentHTML("beforeend", row);
     });
+    tbody.querySelectorAll("input.issue-selection").forEach(checkbox => {
+      checkbox.addEventListener("change", () => {
+        if (checkbox.checked) selectedIssueIds.add(checkbox.value);
+        else selectedIssueIds.delete(checkbox.value);
+        updateIssueSelectionControls(books.length);
+      });
+    });
+    updateIssueSelectionControls(books.length);
+  }
+
+  function updateIssueSelectionControls(totalIssues) {
+    const selectAll = document.getElementById("selectAllIssues");
+    const selectedCount = document.getElementById("selectedIssueCount");
+    const deleteSelectedButton = document.getElementById("deleteSelectedIssuesBtn");
+    const visibleCheckboxes = tbody.querySelectorAll("input.issue-selection");
+    const selectedVisibleCount = Array.from(visibleCheckboxes).filter(checkbox => checkbox.checked).length;
+    selectAll.checked = totalIssues > 0 && selectedVisibleCount === totalIssues;
+    selectAll.indeterminate = selectedVisibleCount > 0 && selectedVisibleCount < totalIssues;
+    selectedCount.textContent = `${selectedIssueIds.size} selected`;
+    deleteSelectedButton.disabled = selectedIssueIds.size === 0;
   }
 
   tbody.addEventListener("click", event => {
+    if (event.target.matches("input.issue-selection")) return;
     const button = event.target.closest("button[data-action]");
     if (!button) return;
     if (button.dataset.action === "edit") window.editBook(button.dataset.id);
@@ -456,37 +491,72 @@ document.addEventListener("DOMContentLoaded", () => {
     bookIdInput.focus();
   });
 
-  window.deleteBook = function(id) {
+  function deleteIssueRecords(issueIds) {
     const books = getIssuedBooks();
-    const bookToDelete = books.find(book => getIssueId(book) === String(id));
-    if (!bookToDelete || !confirm("Are you sure you want to delete this issue record?")) return;
+    const idsToDelete = new Set(issueIds.map(String));
+    const selectedIssues = books.filter(book => idsToDelete.has(getIssueId(book)));
+    if (selectedIssues.length === 0) return;
 
-    const wasReturned = bookToDelete.status === "Returned" ||
-      readList("returnbooks").some(book => String(book.id) === String(bookToDelete.id) && String(book.memberId || "") === String(bookToDelete.memberId || ""));
-    if (!wasReturned && bookToDelete.stockDeducted === true) {
-      const catalogBooks = getCatalogBooks();
-      const catalogBook = catalogBooks.find(book => String(book.id) === String(bookToDelete.id));
-      if (catalogBook) {
-        catalogBook.quantity = getBookStock(catalogBook) + getIssueQuantity(bookToDelete);
-        saveCatalogBooks(catalogBooks);
+    const wasReturnedByIssue = new Map();
+    const returnedBooks = readList("returnbooks");
+    selectedIssues.forEach(issue => {
+      const wasReturned = issue.status === "Returned" ||
+        returnedBooks.some(book => String(book.id) === String(issue.id) && String(book.memberId || "") === String(issue.memberId || ""));
+      wasReturnedByIssue.set(getIssueId(issue), wasReturned);
+      if (!wasReturned && issue.stockDeducted === true) {
+        const catalogBooks = getCatalogBooks();
+        const catalogBook = catalogBooks.find(book => String(book.id) === String(issue.id));
+        if (catalogBook) {
+          catalogBook.quantity = getBookStock(catalogBook) + getIssueQuantity(issue);
+          saveCatalogBooks(catalogBooks);
+        }
       }
-    }
+      logActivity("issue-delete", `Issue record deleted for "${issue.name}" (Member ID: ${issue.memberId || "unknown"})`);
+    });
 
-    localStorage.setItem("issuedBooks", JSON.stringify(books.filter(book => getIssueId(book) !== String(id))));
-    if (wasReturned) {
+    localStorage.setItem("issuedBooks", JSON.stringify(books.filter(book => !idsToDelete.has(getIssueId(book)))));
+    const deletedReturnedIssueKeys = new Set(
+      selectedIssues.filter(issue => wasReturnedByIssue.get(getIssueId(issue))).map(issue => `${String(issue.id)}|${String(issue.memberId || "")}`)
+    );
+    if (deletedReturnedIssueKeys.size > 0) {
       localStorage.setItem("returnbooks", JSON.stringify(
-        readList("returnbooks").filter(book => !(String(book.id) === String(bookToDelete.id) && String(book.memberId || "") === String(bookToDelete.memberId || "")))
+        returnedBooks.filter(book => !deletedReturnedIssueKeys.has(`${String(book.id)}|${String(book.memberId || "")}`))
       ));
     }
-    const reports = readList("reports").filter(report =>
-      !(report.title === bookToDelete.name && report.member === bookToDelete.member)
-    );
+    const reports = readList("reports").filter(report => !selectedIssues.some(issue =>
+      report.title === issue.name && report.member === issue.member
+    ));
     localStorage.setItem("reports", JSON.stringify(reports));
-    logActivity("issue-delete", `Issue record deleted for "${bookToDelete.name}" (Member ID: ${bookToDelete.memberId || "unknown"})`);
+    selectedIssueIds.clear();
     loadIssuedBooks();
     updateAvailableStock();
     updateMemberLookup();
+  }
+
+  window.deleteBook = function(id) {
+    const issue = getIssuedBooks().find(book => getIssueId(book) === String(id));
+    if (!issue || !confirm("Are you sure you want to delete this issue record?")) return;
+    deleteIssueRecords([id]);
   };
+
+  document.getElementById("selectAllIssues").addEventListener("change", event => {
+    tbody.querySelectorAll("input.issue-selection").forEach(checkbox => {
+      checkbox.checked = event.target.checked;
+      if (event.target.checked) selectedIssueIds.add(checkbox.value);
+      else selectedIssueIds.delete(checkbox.value);
+    });
+    updateIssueSelectionControls(tbody.querySelectorAll("input.issue-selection").length);
+  });
+
+  document.getElementById("deleteSelectedIssuesBtn").addEventListener("click", () => {
+    const selectedIssues = getIssuedBooks().filter(issue => selectedIssueIds.has(getIssueId(issue)));
+    if (selectedIssues.length === 0) {
+      alert("Select at least one issue record to delete.");
+      return;
+    }
+    if (!confirm(`Delete ${selectedIssues.length} selected issue record(s)? This cannot be undone.`)) return;
+    deleteIssueRecords(selectedIssues.map(getIssueId));
+  });
 
   window.editBook = function(id) {
     const book = getIssuedBooks().find(issue => getIssueId(issue) === String(id));
