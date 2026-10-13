@@ -54,20 +54,25 @@
         <form id="returnBook">
           <div class="row g-3 border border-info border-3 rounded-3 p-2 mb-3">
             <div class="col-md-4">
-              <label class="form-label">Book ID</label>
+              <label for="bookId" class="form-label">Book ID</label>
               <input type="number" id="bookId" class="form-control" required>
+              <div id="bookLookupMessage" class="form-text">Enter an issued Book ID to load its details.</div>
             </div>
             <div class="col-md-4">
-              <label class="form-label">Book Name</label>
-              <input type="text" id="bookName" class="form-control" required>
+              <label for="bookName" class="form-label">Book Name</label>
+              <input type="text" id="bookName" class="form-control" readonly required>
             </div>
             <div class="col-md-4">
-              <label class="form-label">Member</label>
-              <input type="text" id="member" class="form-control" required>
+              <label for="memberId" class="form-label">Member ID</label>
+              <input type="number" id="memberId" class="form-control" min="1">
             </div>
             <div class="col-md-4">
-              <label class="form-label">Issued Date</label>
-              <input type="date" id="date" class="form-control" required>
+              <label for="member" class="form-label">Member</label>
+              <input type="text" id="member" class="form-control" readonly required>
+            </div>
+            <div class="col-md-4">
+              <label for="date" class="form-label">Issued Date</label>
+              <input type="date" id="date" class="form-control" readonly required>
             </div>
             <div class="mt-3 text-center py-2">
               <button type="submit" class="btn btn-primary">Save</button>
@@ -83,24 +88,13 @@
               <th>ID</th>
               <th>Book Name</th>
               <th>Member</th>
+              <th>Quantity</th>
               <th>Issued Date</th>
               <th>Status</th>
               <th>action</th>
             </tr>
           </thead>
-          <tbody id="ReturnTable">
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>                
-                  <button class="btn btn-primary me-1" onclick="editBook(1)">Edit</button>
-                  <button class="btn btn-danger" onclick="deleteBooks(1)">Delete</button>
-              </td>
-            </tr>
-          </tbody>
+          <tbody id="ReturnTable"></tbody>
         </table>
       </main>
     </div>
@@ -112,6 +106,56 @@ document.addEventListener("DOMContentLoaded", () => {
   const returnForm = document.getElementById("returnBook");
   const tbody = document.getElementById("ReturnTable");
   const addBtn = document.getElementById("returnBookbtn");
+  const bookIdInput = document.getElementById("bookId");
+  const bookNameInput = document.getElementById("bookName");
+  const memberIdInput = document.getElementById("memberId");
+  const memberInput = document.getElementById("member");
+  const dateInput = document.getElementById("date");
+  const bookLookupMessage = document.getElementById("bookLookupMessage");
+
+  function readList(key) {
+    try {
+      const value = JSON.parse(localStorage.getItem(key));
+      return Array.isArray(value) ? value : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function lookupIssuedBook() {
+    const id = bookIdInput.value.trim();
+    const memberId = memberIdInput.value.trim();
+    bookNameInput.value = "";
+    memberInput.value = "";
+    dateInput.value = "";
+
+    if (!id) {
+      bookLookupMessage.textContent = "Enter an issued Book ID to load its details.";
+      bookLookupMessage.className = "form-text";
+      return;
+    }
+
+    const returnedRecords = readList("returnbooks");
+    const issuedBooks = readList("issuedBooks");
+    const issuedBook = issuedBooks.find(book =>
+      String(book.id) === id &&
+      book.status !== "Returned" &&
+      !returnedRecords.some(returned => String(returned.id) === String(book.id) && String(returned.memberId || "") === String(book.memberId || "")) &&
+      (!memberId || String(book.memberId || "") === String(memberId))
+    );
+    if (!issuedBook) {
+      bookLookupMessage.textContent = memberId ? "No active issue found for this Book ID and Member ID." : "No active issue found for this Book ID.";
+      bookLookupMessage.className = "form-text text-danger";
+      return;
+    }
+
+    bookNameInput.value = issuedBook.name || "";
+    memberInput.value = issuedBook.member || "";
+    dateInput.value = issuedBook.date || "";
+    if (!memberIdInput.value) memberIdInput.value = issuedBook.memberId || "";
+    bookLookupMessage.textContent = `Issue found. Returning ${Number(issuedBook.quantity) > 0 ? Number(issuedBook.quantity) : 1} copy/copies.`;
+    bookLookupMessage.className = "form-text text-success";
+  }
 
   function logActivity(type, text) {
     let activities;
@@ -134,6 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>${book.id}</td>
           <td>${book.name}</td>
           <td>${book.member}</td>
+          <td>${Number(book.quantity) || 1}</td>
           <td>${book.date}</td>
           <td>${book.status}</td>
           <td>
@@ -154,6 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const id = document.getElementById("bookId").value.trim();
     const name = document.getElementById("bookName").value.trim();
+    const memberId = document.getElementById("memberId").value.trim();
     const member = document.getElementById("member").value.trim();
     const date = document.getElementById("date").value.trim();
     const status = "Returned"
@@ -163,17 +209,34 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const issuedBooks = JSON.parse(localStorage.getItem("issuedBooks")) || [];
-    const issuedBook = issuedBooks.find(book => String(book.id) === String(id));
+    const issuedBooks = readList("issuedBooks");
+    const issuedBook = issuedBooks.find(book =>
+      String(book.id) === String(id) &&
+      (!memberId || String(book.memberId || "") === String(memberId)) &&
+      book.status !== "Returned"
+    );
     if (!issuedBook) {
-      alert("This Book ID is not currently recorded as issued.");
+      alert(memberId ? "This Book ID and Member ID are not currently recorded as issued." : "This Book ID is not currently recorded as issued.");
+      return;
+    }
+    if (issuedBook.status === "Returned") {
+      alert("This book has already been returned.");
+      return;
+    }
+
+    const catalogBooks = JSON.parse(localStorage.getItem("books")) || [];
+    const catalogBook = catalogBooks.find(book => String(book.id) === String(id));
+    if (!catalogBook) {
+      alert("This book is missing from the catalog, so its stock cannot be updated.");
       return;
     }
 
     let returnbooks = JSON.parse(localStorage.getItem("returnbooks")) || [];
-    const index = returnbooks.findIndex(book => String(book.id) === String(id));
+    const index = returnbooks.findIndex(book =>
+      String(book.id) === String(id) && String(book.memberId || "") === String(issuedBook.memberId || memberId)
+    );
     if (index !== -1) {
-      alert("This Book ID has already been returned.");
+      alert("This Book ID for this member has already been returned.");
       return;
     }
 
@@ -181,11 +244,20 @@ document.addEventListener("DOMContentLoaded", () => {
       id,
       name: issuedBook.name,
       member: issuedBook.member,
+      memberId: issuedBook.memberId || memberId,
+      quantity: Number(issuedBook.quantity) > 0 ? Number(issuedBook.quantity) : 1,
       date: issuedBook.date,
       status
     };
 
     returnbooks.push(returnedBook);
+    if (issuedBook.stockDeducted === true) {
+      const stock = Number(catalogBook.quantity);
+      catalogBook.quantity = (Number.isFinite(stock) && stock > 0 ? stock : 0) + returnedBook.quantity;
+    }
+    issuedBook.status = "Returned";
+    localStorage.setItem("books", JSON.stringify(catalogBooks));
+    localStorage.setItem("issuedBooks", JSON.stringify(issuedBooks));
     alert("Book returned successfully!");
 
     localStorage.setItem("returnbooks", JSON.stringify(returnbooks));
@@ -197,7 +269,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // ✅ Focus Book ID when clicking "Return Book" button
   addBtn.addEventListener("click", (event) => {
     event.preventDefault();
-    document.getElementById("bookId").focus();
+    bookIdInput.focus();
+  });
+
+  bookIdInput.addEventListener("input", lookupIssuedBook);
+  memberIdInput.addEventListener("input", lookupIssuedBook);
+  returnForm.addEventListener("reset", () => {
+    memberIdInput.value = "";
+    bookLookupMessage.textContent = "Enter an issued Book ID to load its details.";
+    bookLookupMessage.className = "form-text";
   });
 
   // ✅ Delete function

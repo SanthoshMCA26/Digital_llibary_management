@@ -21,10 +21,10 @@
             </ul>
         </div>
     </nav>
-    <div class="container-fluid">
+    <div class="container-fluid mt-4 pt-3">
         <div class="row">
         <!-- Sidebar -->
-        <aside class=" col-md-2 bg-warning height-100 p-3">
+        <aside class="col-md-2 bg-warning pt-4 vh-100">
         <ul class="list-unstyled">
           <li class="mb-3">
             <a href="../book page/books.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm">
@@ -57,7 +57,7 @@
             </a>
           </li>
           <li class="mt-4">
-            <a href="../../login/login.html" class="btn btn-danger text-white text-start w-100 rounded-3 shadow-lg">
+            <a href="../../login/login.html" id="logoutBtn" class="btn btn-danger text-white text-start w-100 rounded-3 shadow-lg">
               <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
             </a>
           </li>
@@ -65,17 +65,28 @@
       </aside>
         <main class="col-md-10 p-4">
             <header class="py-2">
-                <h1 class="pt-4">Members Management Module</h1>
+                <h1 class="pt-3">Members Management Module</h1>
                 <p>Manage your Library's Members records stroed in Local storage</p>
                 <div>
                     <h1>Member list</h1>
-                    <p>Member ID must be unique,nameis mandatory,quantity must</p>
-                    <a href="#" id="addMemberBtn" class="btn btn-danger justify-content-end me-2 ">Add New Member</a>
+                    <p>Member ID must be unique, and name, email, and phone are required.</p>
+                    <button type="button" id="addMemberBtn" class="btn btn-danger justify-content-end me-2">Add New Member</button>
                 </div>       
             </header>
+            <div class="mb-3">
+                <label for="memberSearch" class="form-label">Search members</label>
+                <input type="search" id="memberSearch" class="form-control" placeholder="Search by ID, name, email, or phone" aria-label="Search members by ID, name, email, or phone">
+            </div>
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                <span id="selectedMemberCount" class="text-muted" aria-live="polite">0 selected</span>
+                <button type="button" id="deleteSelectedMembersBtn" class="btn btn-danger" disabled>Delete Selected</button>
+            </div>
             <table class="table table-bordered text-center">
                 <thead class="table-light">
                     <tr>
+                        <th>
+                            <input type="checkbox" id="selectAllMembers" class="form-check-input" aria-label="Select all visible members">
+                        </th>
                         <th>ID</th>
                         <th>Name</th>
                         <th>Email</th>
@@ -83,75 +94,190 @@
                         <th>Action</th>
                     </tr>
                     </thead>
-                    <tbody id ="memberTable">
-                        <tr>
-                            <td>1</td>
-                            <td>John Doe</td>
-                            <td>john.doe@example.com</td>
-                            <td>123-456-7890</td>
-                            <td>
-                                <button class="btn btn-primary me-1" onclick="editMember(1)">Edit</button>
-                                <button class="btn btn-danger" onclick="deleteMember(1)">Delete</button>
-                            </td>
-                        </tr>
-                    </tbody>
+                    <tbody id="memberTable"></tbody>
             </table>
-            <h3 class="fw-bold mt-4">Add Member</h3>
-            <p>Add a new member to the library system.</p>
-            <form id="memberForm" class="col-md-8">
-                <div class="mb-3">
-                    <label for="memberId" class="form-label">Member ID</label>
-                    <input type="number" class="form-control" id="memberId" required>
-                </div>
-                <div class="mb-3">
-                    <label for="memberName" class="form-label">Member Name</label>
-                    <input type="text" class="form-control" id="memberName" required>
-                </div>
-                <div class="mb-3">
-                    <label for="memberEmail" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="memberEmail" required>
-                </div>
-                <div class="mb-3">
-                    <label for="memberPhone" class="form-label">Phone</label>
-                    <input type="tel" class="form-control" id="memberPhone" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Add Member</button>
-            </form>    
         </main>
+        </div>
+    </div>
+
+    <div class="modal fade" id="memberModal" tabindex="-1" aria-labelledby="memberFormTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title fw-bold" id="memberFormTitle">Add Member</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="memberForm">
+                    <div class="modal-body">
+                        <p class="text-muted">Member ID must be unique. Name, email, and phone are required.</p>
+                        <div class="mb-3">
+                            <label for="memberId" class="form-label">Member ID</label>
+                            <input type="number" class="form-control" id="memberId" min="1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="memberName" class="form-label">Member Name</label>
+                            <input type="text" class="form-control" id="memberName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="memberEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="memberEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="memberPhone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="memberPhone" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="saveMemberBtn">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 <script>
 
   document.addEventListener("DOMContentLoaded", () => {
   const memberForm = document.getElementById("memberForm");
   if (memberForm) {
+    const memberIdInput = document.getElementById("memberId");
+    const memberSearch = document.getElementById("memberSearch");
+    const memberModal = new bootstrap.Modal(document.getElementById("memberModal"));
+    const memberFormTitle = document.getElementById("memberFormTitle");
+    const saveMemberBtn = document.getElementById("saveMemberBtn");
+    let editingId = null;
+    const selectedMemberIds = new Set();
+
+    function updateMemberSelectionControls(visibleCount) {
+      const selectedVisibleCount = document.querySelectorAll("#memberTable input.member-selection:checked").length;
+      const selectAll = document.getElementById("selectAllMembers");
+      document.getElementById("selectedMemberCount").textContent = `${selectedMemberIds.size} selected`;
+      document.getElementById("deleteSelectedMembersBtn").disabled = selectedMemberIds.size === 0;
+      selectAll.checked = visibleCount > 0 && selectedVisibleCount === visibleCount;
+      selectAll.indeterminate = selectedVisibleCount > 0 && selectedVisibleCount < visibleCount;
+    }
+
+    function setEditMode(id) {
+      editingId = id;
+      memberIdInput.readOnly = id !== null;
+      memberFormTitle.textContent = id === null ? "Add Member" : "Edit Member";
+      saveMemberBtn.textContent = id === null ? "Save" : "Update";
+    }
 
     function loadMembers() {
       const members = JSON.parse(localStorage.getItem("members")) || [];
       const tbody = document.getElementById("memberTable");
+      const searchTerm = memberSearch.value.trim().toLowerCase();
+      const visibleMembers = members.filter(member =>
+        [member.id, member.name, member.email, member.phone]
+          .some(value => String(value == null ? "" : value).toLowerCase().includes(searchTerm))
+      );
+      const existingIds = new Set(members.map(member => String(member.id)));
+      selectedMemberIds.forEach(id => {
+        if (!existingIds.has(id)) selectedMemberIds.delete(id);
+      });
       tbody.innerHTML = "";
 
-      members.forEach(member => {
+      if (visibleMembers.length === 0) {
+        const message = members.length === 0 ? "No members yet. Add your first member." : "No members match your search.";
+        tbody.innerHTML = `<tr><td colspan="6" class="text-muted">${message}</td></tr>`;
+        updateMemberSelectionControls(0);
+        return;
+      }
+
+      visibleMembers.forEach(member => {
         const row = `
           <tr>
-            <td>${member.id}</td>
-            <td>${member.name}</td>
-            <td>${member.email}</td>
-            <td>${member.phone}</td>
+            <td><input type="checkbox" class="form-check-input member-selection" value="${escapeHtml(member.id)}" aria-label="Select ${escapeHtml(member.name)}"${selectedMemberIds.has(String(member.id)) ? " checked" : ""}></td>
+            <td>${escapeHtml(member.id)}</td>
+            <td>${escapeHtml(member.name)}</td>
+            <td>${escapeHtml(member.email)}</td>
+            <td>${escapeHtml(member.phone)}</td>
             <td>
               <div class="d-flex justify-content-center">
-                <button class="btn btn-primary me-2" onclick="editMember('${member.id}')">Edit</button>
-                <button class="btn btn-danger" onclick="deleteMember('${member.id}')">Delete</button>
+                <button class="btn btn-primary me-2" data-action="edit" data-id="${escapeHtml(member.id)}">Edit</button>
+                <button class="btn btn-danger" data-action="delete" data-id="${escapeHtml(member.id)}">Delete</button>
               </div>
             </td>
           </tr>
         `;
         tbody.insertAdjacentHTML("beforeend", row);
       });
+
+      tbody.querySelectorAll("input.member-selection").forEach(checkbox => {
+        checkbox.addEventListener("change", event => {
+          if (event.target.checked) {
+            selectedMemberIds.add(event.target.value);
+          } else {
+            selectedMemberIds.delete(event.target.value);
+          }
+          updateMemberSelectionControls(visibleMembers.length);
+        });
+      });
+      updateMemberSelectionControls(visibleMembers.length);
     }
+
+    function escapeHtml(value) {
+      const element = document.createElement("span");
+      element.textContent = value == null ? "" : String(value);
+      return element.innerHTML;
+    }
+
+    memberSearch.addEventListener("input", loadMembers);
+    document.getElementById("selectAllMembers").addEventListener("change", event => {
+      const checkboxes = document.querySelectorAll("#memberTable input.member-selection");
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = event.target.checked;
+        if (event.target.checked) {
+          selectedMemberIds.add(checkbox.value);
+        } else {
+          selectedMemberIds.delete(checkbox.value);
+        }
+      });
+      updateMemberSelectionControls(checkboxes.length);
+    });
+    document.getElementById("memberTable").addEventListener("click", event => {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+      if (button.dataset.action === "edit") window.editMember(button.dataset.id);
+      if (button.dataset.action === "delete") window.deleteMember(button.dataset.id);
+    });
+
+    document.getElementById("deleteSelectedMembersBtn").addEventListener("click", () => {
+      const members = JSON.parse(localStorage.getItem("members")) || [];
+      const selectedMembers = members.filter(member => selectedMemberIds.has(String(member.id)));
+      if (selectedMembers.length === 0) {
+        alert("Select at least one member to delete.");
+        return;
+      }
+      if (!confirm(`Delete ${selectedMembers.length} selected member(s)? This cannot be undone.`)) return;
+
+      const selectedIds = new Set(selectedMembers.map(member => String(member.id)));
+      localStorage.setItem("members", JSON.stringify(
+        members.filter(member => !selectedIds.has(String(member.id)))
+      ));
+
+      let activities = [];
+      try {
+        activities = JSON.parse(localStorage.getItem("activities")) || [];
+      } catch {
+        activities = [];
+      }
+      activities.push({
+        type: "member-delete",
+        text: `Deleted selected members: ${selectedMembers.map(member => `${member.name} (ID: ${member.id})`).join(", ")}`,
+        time: new Date().toISOString()
+      });
+      localStorage.setItem("activities", JSON.stringify(activities.slice(-100)));
+      selectedMemberIds.clear();
+      loadMembers();
+      alert("Selected members deleted successfully!");
+    });
 
     memberForm.addEventListener("submit", function(e) {
       e.preventDefault();
 
-      const memberId = document.getElementById("memberId").value.trim();
+      const memberId = memberIdInput.value.trim();
       const memberName = document.getElementById("memberName").value.trim();
       const memberEmail = document.getElementById("memberEmail").value.trim();
       const memberPhone = document.getElementById("memberPhone").value.trim();
@@ -162,10 +288,21 @@
       }
 
       let members = JSON.parse(localStorage.getItem("members")) || [];
-      const index = members.findIndex(m => m.id === memberId);
-      if (index !== -1) {
+      const index = members.findIndex(m => String(m.id) === String(editingId));
+      if (editingId !== null && index === -1) {
+        alert("Member not found.");
+        return;
+      }
+
+      if (editingId !== null) {
         members[index] = { id: memberId, name: memberName, email: memberEmail, phone: memberPhone };
       } else {
+        const duplicate = members.some(member => String(member.id) === memberId);
+        if (duplicate) {
+          alert("This Member ID already exists. Use a unique ID, or edit that member.");
+          return;
+        }
+
         members.push({ id: memberId, name: memberName, email: memberEmail, phone: memberPhone });
 
         let activities = [];
@@ -183,16 +320,20 @@
       }
 
       localStorage.setItem("members", JSON.stringify(members));
-      alert("Member saved successfully!");
-      this.reset();
+      alert(editingId === null ? "Member added successfully!" : "Member updated successfully!");
+      memberForm.reset();
+      setEditMode(null);
       loadMembers();
+      memberModal.hide();
     });
 
     const addMemberBtn = document.getElementById("addMemberBtn");
     if (addMemberBtn) {
-      addMemberBtn.addEventListener("click", (event) => {
-        event.preventDefault();
-        document.getElementById("memberId").focus();
+      addMemberBtn.addEventListener("click", () => {
+        memberForm.reset();
+        setEditMode(null);
+        memberModal.show();
+        memberIdInput.focus();
       });
     }
 
@@ -223,14 +364,21 @@
 
     window.editMember = function(id) {
       const members = JSON.parse(localStorage.getItem("members")) || [];
-      const foundMember = members.find(m => m.id === id);
+      const foundMember = members.find(m => String(m.id) === String(id));
       if (!foundMember) return;
 
-      document.getElementById("memberId").value = foundMember.id;
+      memberIdInput.value = foundMember.id;
       document.getElementById("memberName").value = foundMember.name;
       document.getElementById("memberEmail").value = foundMember.email;
       document.getElementById("memberPhone").value = foundMember.phone;
+      setEditMode(String(foundMember.id));
+      memberModal.show();
     };
+
+    document.getElementById("memberModal").addEventListener("hidden.bs.modal", () => {
+      memberForm.reset();
+      setEditMode(null);
+    });
 
     loadMembers();
   }
@@ -243,7 +391,7 @@ window.history.forward();
 function noBack() {
   window.history.forward();
 }
-document.querySelector(".btn-danger").addEventListener("click", () => {
+document.getElementById("logoutBtn").addEventListener("click", () => {
   // Remove only login/session data
   localStorage.removeItem("userEmail");
   localStorage.removeItem("userPassword");
