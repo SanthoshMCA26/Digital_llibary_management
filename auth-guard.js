@@ -1,5 +1,5 @@
 (function () {
-  const loginUrl = new URL("../../login/login.html", window.location.href);
+  const loginUrl = new URL("Login/login.html", document.currentScript.src);
 
   function redirectIfLoggedOut() {
     if (!localStorage.getItem("userRole")) {
