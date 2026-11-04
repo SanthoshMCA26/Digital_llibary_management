@@ -18,7 +18,7 @@
     const adminEmail = "santhoshrvs26@gmail.com";
     const adminPassword = "Santhosh@8380";
 
-    // ✅ Member credentials
+    // ✅ Student credentials
     const storedEmail = localStorage.getItem("userEmail");
     const storedPassword = localStorage.getItem("userPassword");
 
@@ -50,18 +50,18 @@
       return;
     }
 
-    // ✅ Member login
+    // ✅ Student login
     if (role === "member") {
       if (!storedEmail || !storedPassword) {
         message.style.color = "red";
-        message.textContent = "No member account found. Please sign up first.";
+        message.textContent = "No student account found. Please sign up first.";
         return;
       }
 
       if (email === storedEmail && password === storedPassword) {
         localStorage.setItem("userRole", "Member");
         message.style.color = "green";
-        message.textContent = "Member login successful! Redirecting...";
+        message.textContent = "Student login successful! Redirecting...";
         setTimeout(() => {
           window.location.href = "../member-login/DashBoard page/Member-DashBoard.html";
         }, 1500);

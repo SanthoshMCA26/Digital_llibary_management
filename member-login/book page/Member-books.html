@@ -30,7 +30,7 @@
         <li class="nav-item"><a class="nav-link" href="../DashBoard page/Member-DashBoard.html">Dashboard</a></li>
         <!-- FIX: removed the stray backtick that was at the end of this href -->
         <li class="nav-item"><a class="nav-link active" href="../book page/Member-books.html">Books</a></li>
-        <li class="nav-item"><a class="nav-link" href="../member page/member.html">Members</a></li>
+        <li class="nav-item"><a class="nav-link" href="../member page/member.html">Students &amp; Staff</a></li>
       </ul>
     </div>
   </nav>
@@ -47,7 +47,7 @@
           </li>
           <li class="mb-3">
             <a href="../member page/member.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm">
-              <i class="fa-solid fa-users me-2"></i> Members
+              <i class="fa-solid fa-users me-2"></i> Students
             </a>
           </li>
           <li class="mb-3">
@@ -75,7 +75,7 @@
           <p>Manage your library's book records stored in Local Storage</p>
           <div>
             <h1>Book list</h1>
-            <p>Book ID must be unique, name is mandatory, quantity must be greater than zero.</p>
+            <p>Book ID must contain exactly 5 digits and be unique; name is mandatory, and quantity must be greater than zero.</p>
             <button type="button" id="addBookBtn" class="btn btn-danger justify-content-end me-2">Add New Book</button>
           </div>
         </header>
@@ -112,11 +112,11 @@
               </div>
               <form id="bookForm">
                 <div class="modal-body">
-                  <p class="text-muted">Book ID must be unique, name is mandatory, quantity must be greater than zero.</p>
+                  <p class="text-muted">Book ID must contain exactly 5 digits and be unique; name is mandatory, and quantity must be greater than zero.</p>
                   <div class="row g-3">
                     <div class="col-md-4">
                       <label for="bookId" class="form-label">Book ID</label>
-                      <input type="text" id="bookId" class="form-control"maxlength="5" step="1" inputmode="text" required>
+                      <input type="text" id="bookId" class="form-control" maxlength="5" pattern="[0-9]{5}" inputmode="numeric" title="Book ID must contain exactly 5 digits." required>
                     </div>
                     <div class="col-md-4">
                       <label for="bookName" class="form-label">Book Name</label>
@@ -124,7 +124,7 @@
                     </div>
                     <div class="col-md-4">
                       <label for="author" class="form-label">Author</label>
-                      <input type="text" id="author" class="form-control" maxlength="50" required>
+                      <input type="text" id="author" class="form-control" maxlength="50" pattern="[A-Za-z ]+" title="Author name can contain letters and spaces only." required>
                     </div>
                     <div class="col-md-4">
                       <label for="Category" class="form-label">Category</label>
@@ -132,11 +132,15 @@
                     </div>
                     <div class="col-md-4">
                       <label for="year" class="form-label">Published year</label>
-                      <input type="number" id="year" class="form-control" min="1000" max="2100" required>
+                      <input type="text" id="year" class="form-control" maxlength="4" pattern="[0-9]{4}" inputmode="numeric" required>
                     </div>
                     <div class="col-md-4">
                       <label for="quantity" class="form-label">Quantity</label>
-                      <input type="number" id="quantity" class="form-control" min="1" required>
+                      <input type="text" id="quantity" class="form-control" maxlength="3" pattern="[0-9]{3}" inputmode="numeric" required>
+                    </div>
+                    <div class="col-md-8">
+                      <label for="bookUrl" class="form-label">Book details URL (optional)</label>
+                      <input type="url" id="bookUrl" class="form-control" placeholder="https://example.com/book-details">
                     </div>
                   </div>
                 </div>
@@ -204,6 +208,16 @@
       const bookModal = new bootstrap.Modal(document.getElementById("bookModal"));
       let editingId   = null; // null = adding a new book
 
+      idInput.addEventListener("input", () => {
+        idInput.value = idInput.value.replace(/\D/g, "").slice(0, 5);
+      });
+
+      ["bookName", "author"].forEach(fieldId => {
+        document.getElementById(fieldId).addEventListener("input", event => {
+          event.target.value = event.target.value.replace(/[^A-Za-z ]/g, "");
+        });
+      });
+
       function setEditMode(id) {
         editingId = id;
         idInput.readOnly = id !== null;
@@ -250,18 +264,28 @@
         const Category = document.getElementById("Category").value.trim();
         const year     = document.getElementById("year").value.trim();
         const quantity = parseInt(document.getElementById("quantity").value, 10);
+        const bookUrl  = document.getElementById("bookUrl").value.trim();
 
         // FIX: NaN check added (NaN <= 0 is false, so it used to slip through)
-        if (!/^\d{7}$/.test(id) || !name || name.length > 25 || !/^[A-Za-z ]+$/.test(name) || !author || !Category || !year || isNaN(quantity) || quantity <= 0) {
-          if (!/^\d{7}$/.test(id)) {
-            alert("Book ID must contain exactly 7 digits.");
+        if (!/^\d{5}$/.test(id) || !name || name.length > 25 || !/^[A-Za-z ]+$/.test(name) || !/^[A-Za-z ]+$/.test(author) || !Category || !year || isNaN(quantity) || quantity <= 0) {
+          if (!/^\d{5}$/.test(id)) {
+            alert("Book ID must contain exactly 5 digits.");
             return;
           }
           if (!name || name.length > 25 || !/^[A-Za-z ]+$/.test(name)) {
             alert("Book name must contain letters and spaces only, up to 25 characters.");
             return;
           }
+          if (!/^[A-Za-z ]+$/.test(author)) {
+            alert("Author name can contain letters and spaces only.");
+            return;
+          }
           alert("Please fill all required fields correctly. Quantity must be greater than zero.");
+          return;
+        }
+
+        if (bookUrl && !safeBookUrl(bookUrl)) {
+          alert("Book details URL must start with http:// or https://.");
           return;
         }
 
@@ -271,7 +295,7 @@
         if (editingId !== null) {
           // Update existing book
           if (index === -1) { alert("Book not found."); return; }
-          books[index] = { id, name, author, Category, year, quantity };
+          books[index] = { id, name, author, Category, year, quantity, url: bookUrl };
           saveBooks(books);
           logActivity("book-update", `Book updated: "${name}"`);
           alert("Book updated successfully!");
@@ -281,7 +305,7 @@
             alert("This Book ID already exists. Use a unique ID, or click Edit on that book to change it.");
             return;
           }
-          books.push({ id, name, author, Category, year, quantity });
+          books.push({ id, name, author, Category, year, quantity, url: bookUrl });
           saveBooks(books);
           logActivity("book-add", `Book added: "${name}" by ${author}`);
           alert("Book added successfully!");
@@ -326,6 +350,7 @@
           document.getElementById("Category").value = book.Category;
           document.getElementById("year").value     = book.year;
           document.getElementById("quantity").value = book.quantity;
+          document.getElementById("bookUrl").value  = book.url || "";
           setEditMode(String(book.id));
           form.scrollIntoView({ behavior: "smooth" });
         }
@@ -340,7 +365,8 @@
       });
 
       // "Add New Book" opens a fresh form in the modal.
-      document.getElementById("addBookBtn").addEventListener("click", () => {
+      document.getElementById("addBookBtn").addEventListener("click", event => {
+        event.preventDefault();
         form.reset();
         setEditMode(null);
         bookModal.show();

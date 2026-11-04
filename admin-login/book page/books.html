@@ -30,7 +30,7 @@
         <li class="nav-item"><a class="nav-link" href="../DashBoard page/DashBoard.html">Dashboard</a></li>
         <!-- FIX: removed the stray backtick that was at the end of this href -->
         <li class="nav-item"><a class="nav-link active" href="../book page/books.html">Books</a></li>
-        <li class="nav-item"><a class="nav-link" href="../member page/member.html">Members</a></li>
+        <li class="nav-item"><a class="nav-link" href="../member page/member.html">Students &amp; Staff</a></li>
         <li class="nav-item"><a class="nav-link" href="../report page/Report.html">Reports</a></li>
       </ul>
     </div>
@@ -48,7 +48,7 @@
           </li>
           <li class="mb-3">
             <a href="../member page/member.html" class="btn btn-warning text-dark text-start w-100 rounded-3 shadow-sm">
-              <i class="fa-solid fa-users me-2"></i> Members
+              <i class="fa-solid fa-users me-2"></i> Students &amp; Staff
             </a>
           </li>
           <li class="mb-3">
@@ -136,19 +136,19 @@
         </div>
         <form id="bookForm">
           <div class="modal-body">
-            <p class="text-muted">Book ID must be unique, name is mandatory, quantity must be greater than zero.</p>
+            <p class="text-muted">Book ID must contain exactly 5 digits and be unique; name is mandatory, and quantity must be greater than zero.</p>
             <div class="row g-3">
               <div class="col-md-4">
                 <label for="bookId" class="form-label">Book ID</label>
-                <input type="number" id="bookId" class="form-control" min="1" required>
+                <input type="text" id="bookId" class="form-control" maxlength="5" pattern="[0-9]{5}" inputmode="numeric" title="Book ID must contain exactly 5 digits." required>
               </div>
               <div class="col-md-4">
                 <label for="bookName" class="form-label">Book Name</label>
-                <input type="text" id="bookName" class="form-control" required>
+                <input type="text" id="bookName" class="form-control" pattern="[A-Za-z ]+" title="Book name can contain letters and spaces only." required>
               </div>
               <div class="col-md-4">
                 <label for="author" class="form-label">Author</label>
-                <input type="text" id="author" class="form-control" required>
+                <input type="text" id="author" class="form-control" pattern="[A-Za-z ]+" title="Author name can contain letters and spaces only." required>
               </div>
               <div class="col-md-4">
                 <label for="Category" class="form-label">Category</label>
@@ -156,11 +156,11 @@
               </div>
               <div class="col-md-4">
                 <label for="year" class="form-label">Published year</label>
-                <input type="number" id="year" class="form-control" min="1000" max="2100" required>
+                <input type="text" id="year" class="form-control"  maxlength="4" pattern="[0-9]{4}" inputmode="numeric"  required>
               </div>
               <div class="col-md-4">
                 <label for="quantity" class="form-label">Quantity</label>
-                <input type="number" id="quantity" class="form-control" min="1" required>
+                <input type="text" id="quantity" class="form-control"  maxlength="3" pattern="[0-9]{3}" inputmode="numeric" required>
               </div>
               <div class="col-md-8">
                 <label for="bookUrl" class="form-label">Book details URL (optional)</label>
@@ -256,6 +256,16 @@
       var bookModal = new bootstrap.Modal(document.getElementById("bookModal"));
       var editingId = null; // null means a new book is being added
       var selectedBookIds = new Set();
+
+      idInput.addEventListener("input", function () {
+        idInput.value = idInput.value.replace(/\D/g, "").slice(0, 5);
+      });
+
+      ["bookName", "author"].forEach(function (fieldId) {
+        document.getElementById(fieldId).addEventListener("input", function (event) {
+          event.target.value = event.target.value.replace(/[^A-Za-z ]/g, "");
+        });
+      });
 
       function updateBookSelectionControls(visibleCount) {
         var selectedCount = selectedBookIds.size;
@@ -493,8 +503,23 @@
         var quantity = parseInt(document.getElementById("quantity").value, 10);
         var bookUrl = document.getElementById("bookUrl").value.trim();
 
+        if (!/^\d{5}$/.test(id)) {
+          alert("Book ID must contain exactly 5 digits.");
+          return;
+        }
+
+        if (!/^[A-Za-z ]+$/.test(name)) {
+          alert("Book name can contain letters and spaces only.");
+          return;
+        }
+
+        if (!/^[A-Za-z ]+$/.test(author)) {
+          alert("Author name can contain letters and spaces only.");
+          return;
+        }
+
         // FIX: NaN check added (NaN <= 0 is false, so it used to slip through)
-        if (!id || !name || !author || !Category || !year || isNaN(quantity) || quantity <= 0) {
+        if (!name || !author || !Category || !year || isNaN(quantity) || quantity <= 0) {
           alert("Please fill all required fields correctly. Quantity must be greater than zero.");
           return;
         }

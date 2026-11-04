@@ -9,10 +9,14 @@
   <link rel="icon" type="image/x-icon" href="../images/logo.jpg">
   <style>
     body {
-      background-color: #fff8dc;
+      /* background-color: #fff8dc; */
+      background-image: url(../images/login_background_image.jpg);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
     }
     .container-fluid {
-      background-color: rgba(209, 112, 141, 0.186); /* Bootstrap warning color */
+      
       max-width: 500px;
       width: 90%;
       margin: 80px auto;
@@ -21,13 +25,13 @@
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
     .login-box {
-      background-color: #fff;
+      background-color: rgba(255, 255, 255, 0.72);
       width: 70%;
       margin: auto;
       padding: 20px;
       border-radius: 8px;
-      
-      
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
     }
   </style>
 </head>
@@ -48,7 +52,7 @@
           <label >Role :</label>
             <select name="role" id="role">
               <option value="">-- Select role --</option>
-              <option value="member">Member</option>
+              <option value="member">Student</option>
               <option value="admin">Admin</option>
             </select>
         </div>

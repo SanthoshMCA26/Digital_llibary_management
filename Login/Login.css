@@ -1,4 +1,4 @@
-body{
+/* body{
     
    background-image: url(../images/loginBackground.jpg); 
     background-size: cover;
@@ -22,7 +22,7 @@ body{
   border: 2px solid #000;
   border-radius: 10px;
   box-sizing: border-box;
-  overflow: hidden; /* keeps content inside when zooming */
+  overflow: hidden; 
 }
 #user , #password{
   width: 88%;
@@ -70,4 +70,4 @@ h1{
   margin: 25px;
   margin-top: -15px;
   
-}
+} */

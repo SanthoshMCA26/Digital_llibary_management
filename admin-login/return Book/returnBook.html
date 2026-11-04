@@ -34,7 +34,7 @@
       <ul class="navbar-nav">
         <li class="nav-item"><a class="nav-link" href="../DashBoard page/DashBoard.html">Dashboard</a></li>
         <li class="nav-item"><a class="nav-link" href="../book page/books.html">Books</a></li>
-        <li class="nav-item"><a class="nav-link" href="../member page/member.html">Members</a></li>
+        <li class="nav-item"><a class="nav-link" href="../member page/member.html">Students &amp; Staff</a></li>
         <li class="nav-item"><a class="nav-link" href="../report page/Report.html">Reports</a></li>
       </ul>
     </div>
@@ -47,7 +47,7 @@
       <aside class="col-md-2 bg-warning pt-4 vh-100">
         <ul class="list-unstyled">
           <li class="mb-3"><a href="../book page/books.html" class="btn btn-warning text-dark w-100 text-start rounded-3 shadow-sm"><i class="fa-solid fa-book me-2"></i> Books</a></li>
-          <li class="mb-3"><a href="../member page/member.html" class="btn btn-warning text-dark w-100 text-start rounded-3 shadow-sm"><i class="fa-solid fa-users me-2"></i> Members</a></li>
+          <li class="mb-3"><a href="../member page/member.html" class="btn btn-warning text-dark w-100 text-start rounded-3 shadow-sm"><i class="fa-solid fa-users me-2"></i> Students &amp; Staff</a></li>
           <li class="mb-3"><a href="../issued book/issue.html" class="btn btn-warning text-dark w-100 text-start rounded-3 shadow-sm"><i class="fa-solid fa-arrow-up me-2"></i> Issue Book</a></li>
           <li class="mb-3"><a href="../return Book/returnBook.html" class="btn btn-warning text-dark w-100 text-start rounded-3 shadow-sm"><i class="fa-solid fa-arrow-down me-2"></i> Return Book</a></li>
           <li class="mb-3"><a href="../report page/Report.html" class="btn btn-warning text-dark w-100 text-start rounded-3 shadow-sm"><i class="fa-solid fa-chart-bar me-2"></i> Reports</a></li>
@@ -76,13 +76,13 @@
               <input type="text" id="bookName" class="form-control" readonly required>
             </div>
             <div class="col-md-4">
-              <label for="memberId" class="form-label">Member ID</label>
+              <label for="memberId" class="form-label">Borrower ID</label>
               <select id="memberId" class="form-select" required disabled>
                 <option value="">Enter a Book ID first</option>
               </select>
             </div>
             <div class="col-md-4">
-              <label for="member" class="form-label">Member</label>
+              <label for="member" class="form-label">Borrower</label>
               <input type="text" id="member" class="form-control" readonly required>
             </div>
             <div class="col-md-4">
@@ -112,7 +112,7 @@
                 <th><input type="checkbox" id="selectAllReturns" class="form-check-input" aria-label="Select all returned records"></th>
                 <th>ID</th>
                 <th>Book Name</th>
-                <th>Member</th>
+                <th>Borrower</th>
                 <th>Quantity</th>
                 <th>Return Date</th>
                 <th>Status</th>
@@ -220,7 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     activeIssuesForBook = activeIssues;
-    memberIdInput.replaceChildren(new Option("Select a member ID", ""));
+    memberIdInput.replaceChildren(new Option("Select a borrower ID", ""));
     activeIssues.forEach(issue => {
       const option = new Option(
         `${issue.memberId || "Unknown ID"}${issue.member ? ` - ${issue.member}` : ""}${issue.date ? ` (${issue.date})` : ""}`,
@@ -234,7 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
       memberIdInput.value = getIssueId(activeIssues[0]);
       showSelectedIssue();
     } else {
-      bookLookupMessage.textContent = `${activeIssues.length} active issues found. Select the member ID to load the issue details.`;
+      bookLookupMessage.textContent = `${activeIssues.length} active issues found. Select the borrower ID to load the issue details.`;
       bookLookupMessage.className = "form-text text-info";
     }
   }
@@ -323,7 +323,7 @@ document.addEventListener("DOMContentLoaded", () => {
       book.status !== "Returned"
     );
     if (!issuedBook) {
-      alert("This issue is no longer active. Look up the Book ID again and select an active Member ID.");
+      alert("This issue is no longer active. Look up the Book ID again and select an active borrower ID.");
       return;
     }
     if (issuedBook.status === "Returned") {
@@ -340,7 +340,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let returnbooks = JSON.parse(localStorage.getItem("returnbooks")) || [];
     if (hasReturnRecordForIssue(returnbooks, issuedBook)) {
-      alert("This Book ID for this member has already been returned.");
+      alert("This book ID for this borrower has already been returned.");
       return;
     }
 
@@ -349,6 +349,7 @@ document.addEventListener("DOMContentLoaded", () => {
       name: issuedBook.name,
       member: issuedBook.member,
       memberId: issuedBook.memberId || "",
+      memberType: issuedBook.memberType || "student",
       issueId: getIssueId(issuedBook),
       quantity: Number(issuedBook.quantity) > 0 ? Number(issuedBook.quantity) : 1,
       date: issuedBook.date,
@@ -401,7 +402,7 @@ document.addEventListener("DOMContentLoaded", () => {
       returnbooks.filter((book, index) => !indicesToDelete.has(index))
     ));
     deletedReturns.forEach(book => {
-      logActivity("return-delete", `Return record deleted for "${book.name}" (Member ID: ${book.memberId || "unknown"})`);
+      logActivity("return-delete", `Return record deleted for "${book.name}" (Borrower ID: ${book.memberId || "unknown"})`);
     });
     selectedReturnIndices.clear();
     loadReturnBooks();
