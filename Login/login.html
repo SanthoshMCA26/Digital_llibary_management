@@ -31,18 +31,18 @@
     }
   </style>
 </head>
-<body onload="noBack();">
+<body>
   <div class="container-fluid">
     <div class="login-box">
       <h4 class="text-center mb-3">Login</h4>
-      <form id="loginForm">
+      <form id="loginForm" autocomplete="off">
         <div class="mb-3">
           <label for="loginEmail" class="form-label">Enter your email:</label>
-          <input type="email" class="form-control" id="loginEmail" placeholder="Enter your Email" >
+          <input type="email" class="form-control" id="loginEmail" placeholder="Enter your Email" autocomplete="off">
         </div>
         <div class="mb-3">
           <label for="loginPassword" class="form-label" >Enter your Password:</label>
-          <input type="password" class="form-control" id="loginPassword" placeholder="Enter your Password" >
+          <input type="password" class="form-control" id="loginPassword" placeholder="Enter your Password" autocomplete="off">
         </div>
         <div class="mb-3">
           <label >Role :</label>
@@ -62,6 +62,7 @@
     </div>
   </div>
 
+  <script src="../clear-library-data.js"></script>
   <script src="../Login/login.js"></script>
 </body>
 </html>

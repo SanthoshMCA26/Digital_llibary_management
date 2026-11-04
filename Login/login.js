@@ -73,3 +73,16 @@
     }
   });
 });
+
+window.addEventListener("pageshow", () => {
+  const loginForm = document.getElementById("loginForm");
+  const message = document.getElementById("message");
+
+  if (loginForm) {
+    loginForm.reset();
+  }
+
+  if (message) {
+    message.textContent = "";
+  }
+});

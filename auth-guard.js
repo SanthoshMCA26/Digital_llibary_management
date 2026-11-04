@@ -3,11 +3,18 @@
 
   function redirectIfLoggedOut() {
     if (!localStorage.getItem("userRole")) {
+      document.documentElement.style.visibility = "hidden";
       window.location.replace(loginUrl);
+      return;
     }
+
+    document.documentElement.style.visibility = "";
   }
 
   redirectIfLoggedOut();
+  window.addEventListener("pagehide", function () {
+    document.documentElement.style.visibility = "hidden";
+  });
   window.addEventListener("pageshow", redirectIfLoggedOut);
 
   document.addEventListener("click", function (event) {
@@ -20,6 +27,8 @@
 
     event.preventDefault();
     event.stopImmediatePropagation();
+    document.documentElement.style.visibility = "hidden";
+    window.clearLibraryData();
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userPassword");
     localStorage.removeItem("userRole");

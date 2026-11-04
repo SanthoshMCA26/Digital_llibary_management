@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="../../clear-library-data.js"></script>
   <script src="../../auth-guard.js"></script>
   <title>Books Management</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -21,7 +22,7 @@
     }
   </style>
 </head>
-<body onload="noBack();">
+<body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3 fixed-top">
     <a class="navbar-brand fw-bold" href="../DashBoard page/DashBoard.html"><i class="fa-solid fa-book-open"></i> Digital Library</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
@@ -173,11 +174,6 @@
   </div>
 
   <script>
-    // FIX: noBack is now global, so <body onload="noBack();"> can find it
-    function noBack() {
-      window.history.forward();
-    }
-
     // Redirect if not logged in
     if (!localStorage.getItem("userRole")) {
       window.location.replace("../../Login/login.html");
