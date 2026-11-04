@@ -46,6 +46,6 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("userEmail", email);
     localStorage.setItem("userPassword", password);
     alert("Account created successfully!");
-    window.location.href = "../login/login.html";
+    window.location.href = "../Login/login.html";
   });
 });

@@ -58,7 +58,7 @@
             </a>
           </li>
           <li class="mt-4">
-            <a href="../../login/login.html" id="logoutBtn" class="btn btn-danger text-white text-start w-100 rounded-3 shadow-lg">
+            <a href="../../Login/login.html" id="logoutBtn" class="btn btn-danger text-white text-start w-100 rounded-3 shadow-lg">
               <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
             </a>
           </li>
@@ -384,7 +384,7 @@
     loadMembers();
   }
   if (!localStorage.getItem("userRole")) {
-  window.location.replace("../../login/login.html");
+  window.location.replace("../../Login/login.html");
 }
 
 // Prevent forward/back navigation after logout
@@ -397,7 +397,7 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   localStorage.removeItem("userEmail");
   localStorage.removeItem("userPassword");
   localStorage.removeItem("userRole");
-  window.location.replace("../../login/login.html");
+  window.location.replace("../../Login/login.html");
 });
 
 });
