@@ -1,9 +1,9 @@
 (function () {
-  const loginUrl = new URL("Login/login.html", document.currentScript.src);
+  const loginUrl = new URL("Login/login.html", document.currentScript.src).href;
 
   function redirectIfLoggedOut() {
     if (!localStorage.getItem("userRole")) {
-      window.location.replace(loginUrl.href);
+      window.location.replace(loginUrl);
     }
   }
 
@@ -23,6 +23,6 @@
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userPassword");
     localStorage.removeItem("userRole");
-    window.location.replace(loginUrl.href);
+    window.location.replace(loginUrl);
   }, true);
 })();
