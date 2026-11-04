@@ -28,7 +28,6 @@
     event.preventDefault();
     event.stopImmediatePropagation();
     document.documentElement.style.visibility = "hidden";
-    window.clearLibraryData();
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userPassword");
     localStorage.removeItem("userRole");
