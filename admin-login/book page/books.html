@@ -86,7 +86,7 @@
           <p>Manage your library's book records stored in Local Storage</p>
           <div>
             <h1>Book list</h1>
-            <p>Book ID must be unique, name is mandatory, quantity must be greater than zero.</p>
+            <p>Book ID must be unique, name is mandatory, and quantity must be between 1 and 999.</p>
             <button type="button" id="addBookBtn" class="btn btn-danger justify-content-end me-2">Add New Book</button>
           </div>
         </header>
@@ -136,7 +136,7 @@
         </div>
         <form id="bookForm">
           <div class="modal-body">
-            <p class="text-muted">Book ID must contain exactly 5 digits and be unique; name is mandatory, and quantity must be greater than zero.</p>
+            <p class="text-muted">Book ID must contain exactly 5 digits and be unique; name is mandatory, and quantity must be between 1 and 999.</p>
             <div class="row g-3">
               <div class="col-md-4">
                 <label for="bookId" class="form-label">Book ID</label>
@@ -160,7 +160,7 @@
               </div>
               <div class="col-md-4">
                 <label for="quantity" class="form-label">Quantity</label>
-                <input type="text" id="quantity" class="form-control"  maxlength="3" pattern="[0-9]{3}" inputmode="numeric" required>
+                <input type="number" id="quantity" class="form-control" min="1" max="999" step="1" required>
               </div>
               <div class="col-md-8">
                 <label for="bookUrl" class="form-label">Book details URL (optional)</label>
@@ -500,7 +500,7 @@
         var author = document.getElementById("author").value.trim();
         var Category = document.getElementById("Category").value.trim();
         var year = document.getElementById("year").value.trim();
-        var quantity = parseInt(document.getElementById("quantity").value, 10);
+        var quantity = Number(document.getElementById("quantity").value);
         var bookUrl = document.getElementById("bookUrl").value.trim();
 
         if (!/^\d{5}$/.test(id)) {
@@ -518,9 +518,8 @@
           return;
         }
 
-        // FIX: NaN check added (NaN <= 0 is false, so it used to slip through)
-        if (!name || !author || !Category || !year || isNaN(quantity) || quantity <= 0) {
-          alert("Please fill all required fields correctly. Quantity must be greater than zero.");
+        if (!name || !author || !Category || !year || !Number.isInteger(quantity) || quantity < 1 || quantity > 999) {
+          alert("Please fill all required fields correctly. Quantity must be a whole number between 1 and 999.");
           return;
         }
 
