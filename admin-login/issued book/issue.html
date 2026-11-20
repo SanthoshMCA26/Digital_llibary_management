@@ -78,6 +78,7 @@
                 <th>Book Name</th>
                 <th>Borrower ID</th>
                 <th>Borrower</th>
+                <th>Borrower Type</th>
                 <th>Quantity</th>
                 <th>Issued Date</th>
                 <th>Due Date</th>
@@ -217,6 +218,22 @@ document.addEventListener("DOMContentLoaded", () => {
     return `${String(issue.id || "")}|${String(issue.memberId || "")}|${String(issue.date || "")}|${String(issue.name || "")}`;
   }
 
+  function hasReturnRecordForIssue(returnedBooks, issue) {
+    return returnedBooks.some(returned => {
+      if (returned.issueId) return String(returned.issueId) === getIssueId(issue);
+      return String(returned.id) === String(issue.id) &&
+        String(returned.memberId || "") === String(issue.memberId || "") &&
+        (!returned.date || !issue.date || String(returned.date) === String(issue.date));
+    });
+  }
+
+  function getMemberType(issue) {
+    const member = readList("members").find(item => String(item.id) === String(issue.memberId || ""));
+    return issue.memberType === "staff" || (!issue.memberType && member && member.personType === "staff")
+      ? "Staff"
+      : "Student";
+  }
+
   function reconcileExistingIssues() {
     const catalogBooks = getCatalogBooks();
     const issuedBooks = getIssuedBooks();
@@ -231,8 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (issue.stockDeducted === true) return;
 
-      const wasReturned = issue.status === "Returned" ||
-        returnedBooks.some(book => String(book.id) === String(issue.id) && String(book.memberId || "") === String(issue.memberId || ""));
+      const wasReturned = issue.status === "Returned" || hasReturnRecordForIssue(returnedBooks, issue);
       if (!wasReturned) {
         const catalogBook = catalogBooks.find(book => String(book.id) === String(issue.id));
         if (catalogBook) {
@@ -301,7 +317,7 @@ document.addEventListener("DOMContentLoaded", () => {
       (String(issue.memberId || "") === id ||
         (!issue.memberId && String(issue.member || "").toLowerCase() === String(member.name || "").toLowerCase())) &&
       issue.status !== "Returned" &&
-      !readList("returnbooks").some(returned => String(returned.id) === String(issue.id))
+      !hasReturnRecordForIssue(readList("returnbooks"), issue)
     );
     if (issues.length === 0) {
       memberIssuedSummary.innerHTML = `<strong>${escapeHtml(member.name)}</strong> has no currently issued books.`;
@@ -343,7 +359,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const books = getIssuedBooks();
     tbody.innerHTML = "";
     if (books.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="10" class="text-muted">No books have been issued yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="11" class="text-muted">No books have been issued yet.</td></tr>';
       updateIssueSelectionControls(0);
       return;
     }
@@ -362,6 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>${escapeHtml(book.name)}</td>
           <td>${escapeHtml(book.memberId || "")}</td>
           <td>${escapeHtml(book.member)}</td>
+          <td>${escapeHtml(getMemberType(book))}</td>
           <td>${getIssueQuantity(book)}</td>
           <td>${escapeHtml(book.date)}</td>
           <td>${escapeHtml(getDueDate(book.date))}</td>
@@ -436,13 +453,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const issuedBooks = getIssuedBooks();
     const issueIndex = issuedBooks.findIndex(book => getIssueId(book) === String(editingId));
     const existingIssue = issueIndex === -1 ? null : issuedBooks[issueIndex];
+    const returnedBooks = readList("returnbooks");
     const isReturned = existingIssue && (
-      existingIssue.status === "Returned" ||
-      readList("returnbooks").some(book => String(book.id) === String(existingIssue.id) && String(book.memberId || "") === String(existingIssue.memberId || ""))
+      existingIssue.status === "Returned" || hasReturnRecordForIssue(returnedBooks, existingIssue)
     );
 
     if (existingIssue && isReturned) {
       alert("This book has already been returned. Add a new issue after removing the old issue record.");
+      return;
+    }
+
+    const duplicateIssue = issuedBooks.some((issue, index) =>
+      index !== issueIndex &&
+      String(issue.id) === String(id) &&
+      String(issue.memberId || "") === String(memberId) &&
+      issue.status !== "Returned" &&
+      !hasReturnRecordForIssue(returnedBooks, issue)
+    );
+    if (duplicateIssue) {
+      alert("This borrower already has an active issue for this book. Return it before issuing it again.");
       return;
     }
 
@@ -523,8 +552,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const wasReturnedByIssue = new Map();
     const returnedBooks = readList("returnbooks");
     selectedIssues.forEach(issue => {
-      const wasReturned = issue.status === "Returned" ||
-        returnedBooks.some(book => String(book.id) === String(issue.id) && String(book.memberId || "") === String(issue.memberId || ""));
+      const wasReturned = issue.status === "Returned" || hasReturnRecordForIssue(returnedBooks, issue);
       wasReturnedByIssue.set(getIssueId(issue), wasReturned);
       if (!wasReturned && issue.stockDeducted === true) {
         const catalogBooks = getCatalogBooks();
@@ -584,7 +612,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.editBook = function(id) {
     const book = getIssuedBooks().find(issue => getIssueId(issue) === String(id));
     if (!book) return;
-    if (book.status === "Returned" || readList("returnbooks").some(returned => String(returned.id) === String(book.id) && String(returned.memberId || "") === String(book.memberId || ""))) {
+    if (book.status === "Returned" || hasReturnRecordForIssue(readList("returnbooks"), book)) {
       alert("This book has already been returned. Delete the old issue record before creating a new issue.");
       return;
     }

@@ -9,8 +9,8 @@
   loginForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
-    const email = document.getElementById("loginEmail").value.trim();
-    const password = document.getElementById("loginPassword").value.trim();
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
     const role = document.getElementById("role").value;
     const message = document.getElementById("message");
 
@@ -33,7 +33,7 @@
       alert("Please enter a valid email address.");
       return;
     }
-
+    
     // ✅ Admin login
     if (role === "admin") {
       if (email === adminEmail && password === adminPassword) {

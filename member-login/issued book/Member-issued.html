@@ -68,6 +68,7 @@
               <th>Book Name</th>
               <th>Borrower ID</th>
               <th>Borrower</th>
+              <th>Borrower Type</th>
               <th>Quantity</th>
               <th>Issued Date</th>
               <th>Due Date</th>
@@ -188,12 +189,30 @@ document.addEventListener("DOMContentLoaded", () => {
     return Number.isInteger(quantity) && quantity > 0 ? quantity : 1;
   }
 
+  function getIssueId(issue) {
+    if (issue.issueId) return String(issue.issueId);
+    return `${String(issue.id || "")}|${String(issue.memberId || "")}|${String(issue.date || "")}|${String(issue.name || "")}`;
+  }
+
+  function hasReturnRecordForIssue(returnedBooks, issue) {
+    return returnedBooks.some(returned => {
+      if (returned.issueId) return String(returned.issueId) === getIssueId(issue);
+      return String(returned.id) === String(issue.id) &&
+        String(returned.memberId || "") === String(issue.memberId || "") &&
+        (!returned.date || !issue.date || String(returned.date) === String(issue.date));
+    });
+  }
+
+  function getMemberType(issue) {
+    const member = readList("members").find(item => String(item.id) === String(issue.memberId || ""));
+    return issue.memberType === "staff" || (!issue.memberType && member && member.personType === "staff")
+      ? "Staff"
+      : "Student";
+  }
+
   function isReturned(issue) {
     return issue.status === "Returned" ||
-      readList("returnbooks").some(book =>
-        String(book.id) === String(issue.id) &&
-        String(book.memberId || "") === String(issue.memberId || "")
-      );
+      hasReturnRecordForIssue(readList("returnbooks"), issue);
   }
 
   function reconcileExistingIssues() {
@@ -257,7 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
       (String(issue.memberId || "") === id ||
         (!issue.memberId && String(issue.member || "").toLowerCase() === String(member.name || "").toLowerCase())) &&
       issue.status !== "Returned" &&
-      !returnedBooks.some(returned => String(returned.id) === String(issue.id))
+      !hasReturnRecordForIssue(returnedBooks, issue)
     );
     if (issues.length === 0) {
       memberIssuedSummary.innerHTML = `<strong>${escapeHtml(member.name)}</strong> has no currently issued books.`;
@@ -303,7 +322,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function loadIssuedBooks() {
     const books = readList("issuedBooks");
     if (books.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="8" class="text-muted">No books have been issued yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" class="text-muted">No books have been issued yet.</td></tr>';
       return;
     }
     tbody.innerHTML = books.map(book => `
@@ -312,6 +331,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>${escapeHtml(book.name)}</td>
           <td>${escapeHtml(book.memberId || "")}</td>
           <td>${escapeHtml(book.member)}</td>
+          <td>${escapeHtml(getMemberType(book))}</td>
           <td>${getIssueQuantity(book)}</td>
           <td>${escapeHtml(book.date)}</td>
           <td>${escapeHtml(getDueDate(book.date))}</td>
@@ -339,6 +359,19 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Book ID not found. Add this book before issuing it.");
       return;
     }
+    const issuedBooks = readList("issuedBooks");
+    const returnedBooks = readList("returnbooks");
+    const duplicateIssue = issuedBooks.some(issue =>
+      String(issue.id) === String(id) &&
+      String(issue.memberId || "") === String(memberId) &&
+      issue.status !== "Returned" &&
+      !hasReturnRecordForIssue(returnedBooks, issue)
+    );
+    if (duplicateIssue) {
+      alert("This borrower already has an active issue for this book. Return it before issuing it again.");
+      return;
+    }
+
     const catalogBook = catalogBooks[catalogIndex];
     const availableQuantity = getBookStock(catalogBook);
     if (quantity > availableQuantity) {
@@ -361,7 +394,6 @@ document.addEventListener("DOMContentLoaded", () => {
       status: "Issued",
       stockDeducted: true
     };
-    const issuedBooks = readList("issuedBooks");
     issuedBooks.push(issue);
     localStorage.setItem("issuedBooks", JSON.stringify(issuedBooks));
     addReport(memberId, member.name, catalogBook.name);
