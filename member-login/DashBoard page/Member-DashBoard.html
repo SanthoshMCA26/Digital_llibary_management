@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,19 +9,29 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="icon" type="image/x-icon" href="../../images/logo.jpg">
+  <style>
+    @media (min-width: 992px) {
+      .navbar-nav .nav-item { flex: 0 0 125px; text-align: center; }
+      .navbar-nav .nav-link { width: 100%; white-space: nowrap; }
+    }
+  </style>
 </head>
-<body class="bg-light">
+
+<body class=" bg-warning bg-opacity-10">
 
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3 fixed-top">
     <a class="navbar-brand fw-bold" href="#"><i class="fa-solid fa-book-open"></i> Digital Library</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span
+        class="navbar-toggler-icon"></span></button>
     <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
       <ul class="navbar-nav">
-        <li class="nav-item"><a class="nav-link active" href="../DashBoard page/Member-DashBoard.html">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link active" href="../DashBoard page/Member-DashBoard.html">Dashboard</a>
+        </li>
         <li class="nav-item"><a class="nav-link" href="../book page/Member-books.html">Books</a></li>
         <li class="nav-item"><a class="nav-link" href="../member page/member.html">Students &amp; Staff</a></li>
         <li class="nav-item"><a class="nav-link" href="../issued book/Member-issued.html">Issue Book</a></li>
+        <li class="nav-item"><a class="nav-link" href="../about/about.html">About</a></li>
         <li class="nav-item"><a class="nav-link" href="../../Login/login.html" id="logoutBtn">Logout</a></li>
       </ul>
     </div>
@@ -114,140 +125,141 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script>
-  // If user is not logged in, send them to login page
-  if (!localStorage.getItem("userRole")) {
-    window.location.replace("../../Login/login.html");
-  }
-
-  // Get list from localStorage (always return an array)
-  function getList(key) {
-    let data = localStorage.getItem(key);
-    if (!data) return [];
-    try {
-      return JSON.parse(data);
-    } catch {
-      return [];
+  <script>
+    // If user is not logged in, send them to login page
+    if (!localStorage.getItem("userRole")) {
+      window.location.replace("../../Login/login.html");
     }
-  }
 
-  // Make text safe for HTML
-  function safeText(text) {
-    let div = document.createElement("div");
-    div.textContent = text || "";
-    return div.innerHTML;
-  }
+    // Get list from localStorage (always return an array)
+    function getList(key) {
+      let data = localStorage.getItem(key);
+      if (!data) return [];
+      try {
+        return JSON.parse(data);
+      } catch {
+        return [];
+      }
+    }
 
-  // Show "time ago" in simple words
-  function timeAgo(dateString) {
-    let seconds = Math.floor((Date.now() - new Date(dateString).getTime()) / 1000);
-    if (isNaN(seconds)) return "";
-    if (seconds < 60) return "just now";
-    if (seconds < 3600) return Math.floor(seconds / 60) + " min ago";
-    if (seconds < 86400) return Math.floor(seconds / 3600) + " hr ago";
-    return Math.floor(seconds / 86400) + " day(s) ago";
-  }
+    // Make text safe for HTML
+    function safeText(text) {
+      let div = document.createElement("div");
+      div.textContent = text || "";
+      return div.innerHTML;
+    }
 
-  // Icons and colors for each activity type
-  const ACTIVITY_STYLE = {
-    "book-add":    { icon: "fa-book",             color: "text-warning" },
-    "book-update": { icon: "fa-pen-to-square",    color: "text-info" },
-    "book-delete": { icon: "fa-trash",            color: "text-danger" },
-    "issue":       { icon: "fa-book-open-reader", color: "text-success" },
-    "return":      { icon: "fa-rotate-left",      color: "text-secondary" },
-    "member-add":  { icon: "fa-user-plus",        color: "text-primary" },
-    "staff-add":   { icon: "fa-user-tie",         color: "text-primary" },
-    "staff-delete":{ icon: "fa-user-tie",         color: "text-danger" }
-  };
+    // Show "time ago" in simple words
+    function timeAgo(dateString) {
+      let seconds = Math.floor((Date.now() - new Date(dateString).getTime()) / 1000);
+      if (isNaN(seconds)) return "";
+      if (seconds < 60) return "just now";
+      if (seconds < 3600) return Math.floor(seconds / 60) + " min ago";
+      if (seconds < 86400) return Math.floor(seconds / 3600) + " hr ago";
+      return Math.floor(seconds / 86400) + " day(s) ago";
+    }
 
-  let chart = null; // chart object
+    // Icons and colors for each activity type
+    const ACTIVITY_STYLE = {
+      "book-add": { icon: "fa-book", color: "text-warning" },
+      "book-update": { icon: "fa-pen-to-square", color: "text-info" },
+      "book-delete": { icon: "fa-trash", color: "text-danger" },
+      "issue": { icon: "fa-book-open-reader", color: "text-success" },
+      "return": { icon: "fa-rotate-left", color: "text-secondary" },
+      "member-add": { icon: "fa-user-plus", color: "text-primary" },
+      "staff-add": { icon: "fa-user-tie", color: "text-primary" },
+      "staff-delete": { icon: "fa-user-tie", color: "text-danger" }
+    };
 
-  function updateDashboard() {
-    // Get data
-    let books      = getList("books");
-    let members    = getList("members").filter(member => (member.personType || "student") === "student");
-    let activities = getList("activities");
-    let issuedBooks = getList("issuedBooks");
-    let returnedBooks = getList("returnbooks");
-    let returnedIds = new Set(returnedBooks.map(book => String(book.id)));
+    let chart = null; // chart object
 
-    // Count totals
-    let totalCopies = books.reduce((sum, b) => sum + (parseInt(b.quantity) || 0), 0);
-    let issuedCount = issuedBooks.length;
-    let returnedCount = returnedBooks.length;
-    let currentIssued = issuedBooks.filter(book => !returnedIds.has(String(book.id))).length;
+    function updateDashboard() {
+      // Get data
+      let books = getList("books");
+      let members = getList("members").filter(member => (member.personType || "student") === "student");
+      let activities = getList("activities");
+      let issuedBooks = getList("issuedBooks");
+      let returnedBooks = getList("returnbooks");
+      let returnedIds = new Set(returnedBooks.map(book => String(book.id)));
 
-    // Show stats
-    document.getElementById("statTotalBooks").textContent = books.length;
-    document.getElementById("statAvailable").textContent  = Math.max(totalCopies - currentIssued, 0);
-    document.getElementById("statIssued").textContent     = currentIssued;
-    document.getElementById("statMembers").textContent    = members.length;
+      // Count totals
+      let totalCopies = books.reduce((sum, b) => sum + (parseInt(b.quantity) || 0), 0);
+      let issuedCount = issuedBooks.length;
+      let returnedCount = returnedBooks.length;
+      let currentIssued = issuedBooks.filter(book => !returnedIds.has(String(book.id))).length;
 
-    // Show recent activities (last 6)
-    let list = document.getElementById("activityList");
-    let recent = activities.slice(-6).reverse();
-    if (recent.length === 0) {
-      list.innerHTML = '<li class="text-muted">No activity yet. Add a book to get started.</li>';
-    } else {
-      list.innerHTML = recent.map(a => {
-        let style = ACTIVITY_STYLE[a.type] || { icon: "fa-circle-info", color: "text-secondary" };
-        return `
+      // Show stats
+      document.getElementById("statTotalBooks").textContent = books.length;
+      document.getElementById("statAvailable").textContent = Math.max(totalCopies - currentIssued, 0);
+      document.getElementById("statIssued").textContent = currentIssued;
+      document.getElementById("statMembers").textContent = members.length;
+
+      // Show recent activities (last 6)
+      let list = document.getElementById("activityList");
+      let recent = activities.slice(-6).reverse();
+      if (recent.length === 0) {
+        list.innerHTML = '<li class="text-muted">No activity yet. Add a book to get started.</li>';
+      } else {
+        list.innerHTML = recent.map(a => {
+          let style = ACTIVITY_STYLE[a.type] || { icon: "fa-circle-info", color: "text-secondary" };
+          return `
           <li class="d-flex align-items-start mb-2">
             <i class="fa-solid ${style.icon} ${style.color} me-2 mt-1"></i>
             <div class="flex-grow-1 text-start">${safeText(a.text)}</div>
             <small class="text-muted ms-2 text-nowrap">${safeText(timeAgo(a.time))}</small>
           </li>`;
-      }).join("");
+        }).join("");
+      }
+
+      // Show chart
+      let emptyMsg = document.getElementById("chartEmpty");
+      emptyMsg.style.display = (issuedCount + returnedCount === 0) ? "block" : "none";
+
+      if (typeof Chart === "undefined") return; // Chart.js not loaded
+
+      let chartData = [issuedCount, returnedCount];
+      if (chart) {
+        chart.data.datasets[0].data = chartData;
+        chart.update();
+      } else {
+        chart = new Chart(document.getElementById("issueReturnChart"), {
+          type: "bar",
+          data: {
+            labels: ["Issued", "Returned"],
+            datasets: [{
+              data: chartData,
+              backgroundColor: ["#ffc107", "#198754"],
+              borderRadius: 10
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+          }
+        });
+      }
     }
 
-    // Show chart
-    let emptyMsg = document.getElementById("chartEmpty");
-    emptyMsg.style.display = (issuedCount + returnedCount === 0) ? "block" : "none";
+    // Run once at start
+    updateDashboard();
 
-    if (typeof Chart === "undefined") return; // Chart.js not loaded
+    // Refresh when page comes back from cache
+    window.addEventListener("pageshow", updateDashboard);
+    // Refresh if another tab changes localStorage
+    window.addEventListener("storage", updateDashboard);
 
-    let chartData = [issuedCount, returnedCount];
-    if (chart) {
-      chart.data.datasets[0].data = chartData;
-      chart.update();
-    } else {
-      chart = new Chart(document.getElementById("issueReturnChart"), {
-        type: "bar",
-        data: {
-          labels: ["Issued", "Returned"],
-          datasets: [{
-            data: chartData,
-            backgroundColor: ["#ffc107", "#198754"],
-            borderRadius: 10
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
-        }
-      });
-    }
-  }
-
-  // Run once at start
-  updateDashboard();
-
-  // Refresh when page comes back from cache
-  window.addEventListener("pageshow", updateDashboard);
-  // Refresh if another tab changes localStorage
-  window.addEventListener("storage", updateDashboard);
-
-  // Logout button clears login info
-  document.getElementById("logoutBtn").addEventListener("click", () => {
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("userPassword");
-    localStorage.removeItem("userRole");
-  });
-</script>
+    // Logout button clears login info
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("userEmail");
+      localStorage.removeItem("userPassword");
+      localStorage.removeItem("userRole");
+    });
+  </script>
 
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
